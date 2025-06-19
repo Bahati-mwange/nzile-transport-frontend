@@ -5,6 +5,7 @@ export interface Session {
   id: string;
   driverId: string;
   vehicleId: string;
+  carteId: string; // Ajout du champ manquant
   dateDebut: string;
   dateFin: string;
   dureeConduite: number; // minutes
@@ -57,6 +58,7 @@ export const mockSessions: Session[] = [
     id: '1',
     driverId: '1',
     vehicleId: '1',
+    carteId: '1',
     dateDebut: '2025-01-19T06:00:00',
     dateFin: '2025-01-19T18:30:00',
     dureeConduite: 450, // 7h30
@@ -81,6 +83,7 @@ export const mockSessions: Session[] = [
     id: '2',
     driverId: '2',
     vehicleId: '3',
+    carteId: '2',
     dateDebut: '2025-01-19T07:15:00',
     dateFin: '2025-01-19T16:45:00',
     dureeConduite: 330, // 5h30
@@ -105,6 +108,7 @@ export const mockSessions: Session[] = [
     id: '3',
     driverId: '1',
     vehicleId: '1',
+    carteId: '1',
     dateDebut: '2025-01-20T08:00:00',
     dateFin: '2025-01-20T17:00:00',
     dureeConduite: 300, // 5h
@@ -188,7 +192,7 @@ export const mockAlertes = [
     id: '1',
     type: 'temps_depassement',
     message: 'Chauffeur ONDO: temps de conduite dépassé (9h30)',
-    gravite: 'critique',
+    gravite: 'critique' as const,
     timestamp: '2025-01-19T15:30:00',
     driverId: '1',
     resolu: false
@@ -197,7 +201,7 @@ export const mockAlertes = [
     id: '2',
     type: 'vitesse_excessive',
     message: 'Véhicule GA-3456-LV: excès de vitesse détecté (95 km/h)',
-    gravite: 'moyenne',
+    gravite: 'moyenne' as const,
     timestamp: '2025-01-19T14:15:00',
     vehicleId: '1',
     resolu: false

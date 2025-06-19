@@ -8,11 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Search, Eye, AlertCircle, MapPin, Calendar } from 'lucide-react';
-import type { TachographSession } from '@/hooks/useApiData';
+import type { Session } from '@/data/mockData';
 
 const Sessions: React.FC = () => {
-  const { getTachographSessions, currentUser, isLoading } = useApiData();
-  const [sessions, setSessions] = useState<TachographSession[]>([]);
+  const { getSessions, currentUser, isLoading } = useApiData();
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const Sessions: React.FC = () => {
   }, []);
 
   const loadSessions = async () => {
-    const data = await getTachographSessions();
+    const data = getSessions();
     // Filtrer selon le type d'utilisateur
     const filteredData = currentUser?.type === 'particulier' 
       ? data.filter(session => session.driverId === currentUser.id)
