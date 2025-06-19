@@ -35,6 +35,7 @@ import ChauffeurDetail from "./pages/ChauffeurDetail";
 import ChauffeurEdit from "./pages/ChauffeurEdit";
 import Vehicules from "./pages/Vehicules";
 import NouveauVehicule from "./pages/NouveauVehicule";
+import VehiculeDetail from "./pages/VehiculeDetail";
 import Profil from "./pages/Profil";
 import NotFound from "./pages/NotFound";
 
@@ -42,6 +43,7 @@ import NotFound from "./pages/NotFound";
 import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
+import ChronoData from "./pages/ChronoData";
 
 const queryClient = new QueryClient();
 
@@ -97,21 +99,9 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          <Route path="/entreprise/mandataires" element={
-            <ProtectedRoute allowedUserTypes={['entreprise']}>
-              <EntrepriseMandataires />
-            </ProtectedRoute>
-          } />
-          
           <Route path="/entreprise/demandes" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
               <Cartes />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/entreprise/entreprises" element={
-            <ProtectedRoute allowedUserTypes={['entreprise']}>
-              <EntrepriseEntreprises />
             </ProtectedRoute>
           } />
           
@@ -175,6 +165,12 @@ const App = () => (
             </ProtectedRoute>
           } />
           
+          <Route path="/vehicules/:id" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <VehiculeDetail />
+            </ProtectedRoute>
+          } />
+          
           {/* Pages communes */}
           <Route path="/cartes" element={
             <ProtectedRoute>
@@ -209,6 +205,12 @@ const App = () => (
           <Route path="/sessions/nouvelle" element={
             <ProtectedRoute>
               <Sessions />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/chrono-data" element={
+            <ProtectedRoute>
+              <ChronoData />
             </ProtectedRoute>
           } />
           

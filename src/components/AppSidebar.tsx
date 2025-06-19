@@ -28,7 +28,9 @@ import {
   Bell,
   HelpCircle,
   Mail,
-  Plus
+  Plus,
+  Database,
+  BarChart3
 } from 'lucide-react';
 import { Button } from './ui/button';
 
@@ -44,6 +46,9 @@ const AppSidebar: React.FC = () => {
     { title: "Tableau de bord", url: "/dashboard", icon: Home },
     { title: "Mes demandes", url: "/mes-demandes", icon: FileText },
     { title: "Nouvelle demande", url: "/mes-demandes/nouvelle", icon: Plus },
+    { title: "Cartes", url: "/cartes", icon: CreditCard },
+    { title: "Sessions", url: "/sessions", icon: Clock },
+    { title: "Données Chrono", url: "/chrono-data", icon: Database },
     { title: "Notifications", url: "/notifications", icon: Bell },
     { title: "Mon profil", url: "/profil", icon: User },
     { title: "FAQ", url: "/faq", icon: HelpCircle },
@@ -52,12 +57,13 @@ const AppSidebar: React.FC = () => {
 
   const entrepriseMenuItems = [
     { title: "Tableau de bord", url: "/entreprise", icon: Home },
-    { title: "Mandataires", url: "/entreprise/mandataires", icon: Users },
     { title: "Demandes", url: "/entreprise/demandes", icon: FileText },
-    { title: "Entreprises", url: "/entreprise/entreprises", icon: Building2 },
+    { title: "Chauffeurs", url: "/chauffeurs", icon: Users },
     { title: "Véhicules", url: "/vehicules", icon: Truck },
-    { title: "Documents", url: "/entreprise/documents", icon: CreditCard },
+    { title: "Cartes", url: "/cartes", icon: CreditCard },
     { title: "Sessions", url: "/sessions", icon: Clock },
+    { title: "Données Chrono", url: "/chrono-data", icon: Database },
+    { title: "Documents", url: "/entreprise/documents", icon: FileText },
     { title: "Notifications", url: "/entreprise/notifications", icon: Bell },
     { title: "Profil entreprise", url: "/entreprise/profil", icon: Building2 },
     { title: "FAQ", url: "/faq", icon: HelpCircle },
@@ -137,7 +143,7 @@ const AppSidebar: React.FC = () => {
                   <SidebarMenuButton asChild>
                     <Link to="/chauffeurs/nouveau" className="flex items-center gap-3 px-3 py-2 rounded-lg text-green-600">
                       <Plus className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">Nouveau mandataire</span>
+                      <span className="truncate">Nouveau chauffeur</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
