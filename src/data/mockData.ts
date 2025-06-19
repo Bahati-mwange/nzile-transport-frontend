@@ -1,11 +1,10 @@
-
 // Données mockées pour la plateforme transport.nzile.ga
 
 export interface Session {
   id: string;
   driverId: string;
   vehicleId: string;
-  carteId: string; // Ajout du champ manquant
+  carteId: string;
   dateDebut: string;
   dateFin: string;
   dureeConduite: number; // minutes
@@ -19,6 +18,7 @@ export interface Session {
   trajetArrivee: string;
   activites: SessionActivity[];
   statut: 'en_cours' | 'terminee' | 'suspendue';
+  coDriverId?: string; // Conducteur accompagnant
 }
 
 export interface SessionActivity {
@@ -28,6 +28,18 @@ export interface SessionActivity {
   duree: number; // minutes
   vitesse?: number;
   localisation: string;
+}
+
+export interface ChronoData {
+  timestamp: string;
+  driverId: string;
+  vehicleId: string;
+  actionType: 'conduite' | 'pause' | 'arret';
+  duration: number; // minutes
+  speed?: number;
+  locationStart: string;
+  locationEnd?: string;
+  violationType?: string;
 }
 
 export interface DashboardStats {
@@ -71,6 +83,7 @@ export const mockSessions: Session[] = [
     trajetDepart: 'Libreville',
     trajetArrivee: 'Franceville',
     statut: 'terminee',
+    coDriverId: '3',
     activites: [
       { id: '1-1', heure: '06:00', type: 'conduite', duree: 120, vitesse: 70, localisation: 'Libreville' },
       { id: '1-2', heure: '08:00', type: 'repos', duree: 45, localisation: 'Ndjolé' },
@@ -126,6 +139,39 @@ export const mockSessions: Session[] = [
       { id: '3-2', heure: '10:30', type: 'repos', duree: 90, localisation: 'Bakoumba' },
       { id: '3-3', heure: '12:00', type: 'conduite', duree: 150, vitesse: 58, localisation: 'Bakoumba' },
     ]
+  }
+];
+
+// Données chronotachygraphe détaillées
+export const mockChronoData: ChronoData[] = [
+  {
+    timestamp: '2025-01-19T06:00:00',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'conduite',
+    duration: 120,
+    speed: 70,
+    locationStart: 'Libreville',
+    locationEnd: 'Ndjolé'
+  },
+  {
+    timestamp: '2025-01-19T08:00:00',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'pause',
+    duration: 45,
+    locationStart: 'Ndjolé'
+  },
+  {
+    timestamp: '2025-01-19T10:45:00',
+    driverId: '2',
+    vehicleId: '3',
+    actionType: 'conduite',
+    duration: 90,
+    speed: 85,
+    locationStart: 'Kango',
+    locationEnd: 'Lambaréné',
+    violationType: 'Pause manquée'
   }
 ];
 
