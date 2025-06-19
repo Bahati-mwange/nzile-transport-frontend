@@ -58,7 +58,7 @@ const AppSidebar: React.FC = () => {
   const entrepriseMenuItems = [
     { title: "Tableau de bord", url: "/entreprise", icon: Home },
     { title: "Demandes", url: "/entreprise/demandes", icon: FileText },
-    { title: "Chauffeurs", url: "/chauffeurs", icon: Users },
+    { title: "Conducteurs", url: "/chauffeurs", icon: Users },
     { title: "Véhicules", url: "/vehicules", icon: Truck },
     { title: "Cartes", url: "/cartes", icon: CreditCard },
     { title: "Sessions", url: "/sessions", icon: Clock },
@@ -141,9 +141,17 @@ const AppSidebar: React.FC = () => {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
+                    <Link to="/entreprise/demandes/nouvelle-demande" className="flex items-center gap-3 px-3 py-2 rounded-lg text-green-600">
+                      <Plus className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">Nouvelle demande</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
                     <Link to="/chauffeurs/nouveau" className="flex items-center gap-3 px-3 py-2 rounded-lg text-green-600">
                       <Plus className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">Nouveau chauffeur</span>
+                      <span className="truncate">Nouveau conducteur</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

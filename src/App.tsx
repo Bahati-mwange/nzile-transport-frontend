@@ -23,12 +23,14 @@ import DashboardEntreprise from "./pages/DashboardEntreprise";
 import EntrepriseMandataires from "./pages/EntrepriseMandataires";
 import EntrepriseEntreprises from "./pages/EntrepriseEntreprises";
 import EntrepriseDocuments from "./pages/EntrepriseDocuments";
+import EntrepriseNouvelleDemande from "./pages/EntrepriseNouvelleDemande";
 
 // Pages communes
 import Cartes from "./pages/Cartes";
 import NouvelleCarteForm from "./pages/NouvelleCarteForm";
 import CarteDetail from "./pages/CarteDetail";
 import Sessions from "./pages/Sessions";
+import SessionDetail from "./pages/SessionDetail";
 import Chauffeurs from "./pages/Chauffeurs";
 import NouveauChauffeur from "./pages/NouveauChauffeur";
 import ChauffeurDetail from "./pages/ChauffeurDetail";
@@ -44,6 +46,8 @@ import Notifications from "./pages/Notifications";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import ChronoData from "./pages/ChronoData";
+import DemandeDetail from "./pages/DemandeDetail";
+import DocumentDetail from "./pages/DocumentDetail";
 
 const queryClient = new QueryClient();
 
@@ -82,7 +86,7 @@ const App = () => (
           
           <Route path="/mes-demandes/:id" element={
             <ProtectedRoute allowedUserTypes={['particulier']}>
-              <CarteDetail />
+              <DemandeDetail />
             </ProtectedRoute>
           } />
           
@@ -102,12 +106,31 @@ const App = () => (
           <Route path="/entreprise/demandes" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
               <Cartes />
+            </Protecte
+
+          } />
+          
+          <Route path="/entreprise/demandes/nouvelle-demande" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <EntrepriseNouvelleDemande />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/demandes/:id" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <DemandeDetail />
             </ProtectedRoute>
           } />
           
           <Route path="/entreprise/documents" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
               <EntrepriseDocuments />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/documents/:id" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <DocumentDetail />
             </ProtectedRoute>
           } />
           
@@ -198,7 +221,7 @@ const App = () => (
           
           <Route path="/sessions/:id" element={
             <ProtectedRoute>
-              <Sessions />
+              <SessionDetail />
             </ProtectedRoute>
           } />
           

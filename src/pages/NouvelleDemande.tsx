@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
+import ConditionsGenerales from '@/components/ConditionsGenerales';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { CreditCard, Clock, Upload, User, FileText, CheckCircle } from 'lucide-react';
 
@@ -22,13 +23,15 @@ const NouvelleDemande: React.FC = () => {
       dateNaissance: '',
       lieuNaissance: '',
       nationalite: 'Gabonaise',
+      pieceIdentite: 'CNI',
+      numeroPiece: '',
       adresse: '',
       ville: '',
       telephone: '',
       email: ''
     },
     documents: {
-      cni: null as File | null,
+      pieceIdentite: null as File | null,
       permis: null as File | null,
       photo: null as File | null,
       certificatMedical: null as File | null
@@ -44,6 +47,13 @@ const NouvelleDemande: React.FC = () => {
     { id: 2, title: 'Informations personnelles', icon: User },
     { id: 3, title: 'Justificatifs', icon: FileText },
     { id: 4, title: 'Validation', icon: CheckCircle }
+  ];
+
+  const piecesIdentite = [
+    { value: 'CNI', label: 'Carte Nationale d\'Identité (CNI)' },
+    { value: 'Passeport', label: 'Passeport' },
+    { value: 'Carte_sejour', label: 'Carte de séjour' },
+    { value: 'Permis_conduire', label: 'Permis de conduire (pièce d\'identité)' }
   ];
 
   const handleNext = () => {
@@ -194,6 +204,36 @@ const NouvelleDemande: React.FC = () => {
               </div>
             </div>
 
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="pieceIdentite">Type de pièce d'identité</Label>
+                <Select 
+                  value={formData.informationsPersonnelles.pieceIdentite} 
+                  onValueChange={(value) => updateFormData('informationsPersonnelles', 'pieceIdentite', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionnez une pièce d'identité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {piecesIdentite.map((piece) => (
+                      <SelectItem key={piece.value} value={piece.value}>
+                        {piece.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="numeroPiece">Numéro de pièce d'identité</Label>
+                <Input
+                  id="numeroPiece"
+                  value={formData.informationsPersonnelles.numeroPiece}
+                  onChange={(e) => updateFormData('informationsPersonnelles', 'numeroPiece', e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="adresse">Adresse complète</Label>
               <Textarea
@@ -239,7 +279,9 @@ const NouvelleDemande: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <Upload className="h-5 w-5 text-blue-600" />
                     <div>
-                      <div className="font-medium">Carte Nationale d'Identité (CNI)</div>
+                      <div className="font-medium">
+                        {piecesIdentite.find(p => p.value === formData.informationsPersonnelles.pieceIdentite)?.label || 'Pièce d\'identité'}
+                      </div>
                       <div className="text-sm text-muted-foreground">Format: PDF, JPG (max 5MB)</div>
                     </div>
                   </div>
@@ -312,21 +354,33 @@ const NouvelleDemande: React.FC = () => {
                 <p><strong>Type:</strong> {formData.type.replace('_', ' ')}</p>
                 <p><strong>Nom:</strong> {formData.informationsPersonnelles.prenom} {formData.informationsPersonnelles.nom}</p>
                 <p><strong>Date de naissance:</strong> {formData.informationsPersonnelles.dateNaissance}</p>
+                <p><strong>Lieu de naissance:</strong> {formData.informationsPersonnelles.lieuNaissance}</p>
+                <p><strong>Pièce d'identité:</strong> {formData.informationsPersonnelles.pieceIdentite} - {formData.informationsPersonnelles.numeroPiece}</p>
                 <p><strong>Ville:</strong> {formData.informationsPersonnelles.ville}</p>
               </div>
             </Card>
 
-            <div className="flex items-start space-x-2">
-              <Checkbox 
-                id="cgu" 
-                checked={formData.accepteCGU}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, accepteCGU: checked as boolean }))}
-              />
-              <Label htmlFor="cgu" className="text-sm leading-5">
-                J'accepte les <button type="button" className="text-blue-600 hover:underline">conditions générales d'utilisation</button> et 
-                la <button type="button" className="text-blue-600 hover:underline">politique de confidentialité</button> de transport.nzile.ga
-              </Label>
-            </div>
+            {/* Prix */}
+            <Card className="p-4">
+              <h4 className="font-medium mb-2">Facture</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span>Carte conducteur</span>
+                  <span className="font-medium">25 000 XAF</span>
+                </div>
+                <div className="border-t pt-2">
+                  <div className="flex justify-between font-bold">
+                    <span>Total</span>
+                    <span>25 000 XAF</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <ConditionsGenerales 
+              accepted={formData.accepteCGU}
+              onAcceptedChange={(accepted) => setFormData(prev => ({ ...prev, accepteCGU: accepted }))}
+            />
 
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-sm text-amber-800">
