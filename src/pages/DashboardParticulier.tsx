@@ -1,217 +1,247 @@
 
 import React from 'react';
-import { useApiData } from '@/hooks/useApiData';
-import PageLayout from '@/components/PageLayout';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Clock, Plus, User, FileText, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import PageLayout from '@/components/PageLayout';
+import { 
+  Plus, 
+  FileText, 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  Bell,
+  TrendingUp,
+  Calendar
+} from 'lucide-react';
 
 const DashboardParticulier: React.FC = () => {
-  const { currentUser, isInitialized, mockData } = useApiData();
+  // Données de démonstration
+  const stats = {
+    enCours: 3,
+    terminees: 12,
+    rejetees: 1,
+    total: 16
+  };
 
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" text="Chargement de votre espace..." />
-      </div>
-    );
-  }
+  const recentDemandes = [
+    {
+      id: 1,
+      numero: "CT-2025-001",
+      type: "Carte Conducteur",
+      statut: "En cours",
+      dateCreation: "2025-01-15",
+      etapeActuelle: "Vérification documents"
+    },
+    {
+      id: 2,
+      numero: "CH-2025-002", 
+      type: "Chronotachygraphe",
+      statut: "Validée",
+      dateCreation: "2025-01-10",
+      etapeActuelle: "Terminé"
+    },
+    {
+      id: 3,
+      numero: "CT-2024-045",
+      type: "Carte Conducteur",
+      statut: "Rejetée",
+      dateCreation: "2024-12-20",
+      etapeActuelle: "Document non conforme"
+    }
+  ];
 
-  if (!currentUser || currentUser.type !== 'particulier') {
-    return (
-      <PageLayout title="Accès refusé">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Accès réservé aux particuliers</p>
-        </div>
-      </PageLayout>
-    );
-  }
+  const notifications = [
+    {
+      id: 1,
+      message: "Votre demande CT-2025-001 nécessite un document complémentaire",
+      type: "attention",
+      date: "Il y a 2 heures"
+    },
+    {
+      id: 2,
+      message: "Demande CH-2025-002 validée avec succès",
+      type: "success",
+      date: "Hier"
+    }
+  ];
 
-  const profile = currentUser.profile as any;
-  const userDriverCards = mockData.driverCards.filter(c => c.driverId === currentUser.id);
-  const userSessions = mockData.sessions.filter(s => s.driverId === currentUser.id);
+  const getStatutBadge = (statut: string) => {
+    switch (statut) {
+      case 'En cours':
+        return <Badge variant="secondary" className="bg-orange-100 text-orange-800">🟠 En cours</Badge>;
+      case 'Validée':
+        return <Badge variant="secondary" className="bg-green-100 text-green-800">🟢 Validée</Badge>;
+      case 'Rejetée':
+        return <Badge variant="secondary" className="bg-red-100 text-red-800">🔴 Rejetée</Badge>;
+      default:
+        return <Badge variant="secondary">{statut}</Badge>;
+    }
+  };
+
+  const actionButton = (
+    <Link to="/mes-demandes/nouvelle">
+      <Button className="bg-transport-primary hover:bg-blue-700">
+        <Plus className="h-4 w-4 mr-2" />
+        <span className="hidden sm:inline">Nouvelle demande</span>
+        <span className="sm:hidden">Nouvelle</span>
+      </Button>
+    </Link>
+  );
 
   return (
-    <PageLayout title={`Bienvenue ${profile.prenom} ${profile.nom}`}>
+    <PageLayout title="Tableau de bord" actions={actionButton}>
       <div className="space-y-6">
-        {/* Informations utilisateur */}
+        {/* Statistiques principales */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">En cours</CardTitle>
+              <Clock className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{stats.enCours}</div>
+              <p className="text-xs text-muted-foreground">demandes actives</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Terminées</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{stats.terminees}</div>
+              <p className="text-xs text-muted-foreground">validées</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Rejetées</CardTitle>
+              <XCircle className="h-4 w-4 text-red-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{stats.rejetees}</div>
+              <p className="text-xs text-muted-foreground">à reprendre</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total</CardTitle>
+              <TrendingUp className="h-4 w-4 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
+              <p className="text-xs text-muted-foreground">demandes</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Demandes récentes */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Mes demandes récentes
+                </span>
+                <Link to="/mes-demandes">
+                  <Button variant="ghost" size="sm">Voir tout</Button>
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {recentDemandes.map((demande) => (
+                <div key={demande.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-gray-50 rounded-lg space-y-2 sm:space-y-0">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">{demande.numero}</span>
+                      {getStatutBadge(demande.statut)}
+                    </div>
+                    <p className="text-sm text-gray-600">{demande.type}</p>
+                    <p className="text-xs text-gray-500">{demande.etapeActuelle}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {demande.dateCreation}
+                    </span>
+                    <Link to={`/mes-demandes/${demande.id}`}>
+                      <Button variant="ghost" size="sm">
+                        Voir
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Notifications */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <Bell className="h-5 w-5" />
+                  Notifications récentes
+                </span>
+                <Link to="/notifications">
+                  <Button variant="ghost" size="sm">Voir tout</Button>
+                </Link>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {notifications.map((notif) => (
+                <div key={notif.id} className="p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm font-medium mb-1">{notif.message}</p>
+                  <p className="text-xs text-gray-500">{notif.date}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Actions rapides */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              Mon profil
-            </CardTitle>
+            <CardTitle>Actions rapides</CardTitle>
+            <CardDescription>
+              Accédez rapidement aux fonctionnalités principales
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Email</p>
-                <p>{profile.email}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Permis de conduire</p>
-                <p className="font-mono">{profile.permis}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Ville</p>
-                <p>{profile.ville}</p>
-              </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link to="/mes-demandes/nouvelle">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2">
+                  <Plus className="h-6 w-6" />
+                  <span className="text-sm">Nouvelle demande</span>
+                </Button>
+              </Link>
+              <Link to="/mes-demandes">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2">
+                  <FileText className="h-6 w-6" />
+                  <span className="text-sm">Mes demandes</span>
+                </Button>
+              </Link>
+              <Link to="/profil">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2">
+                  <FileText className="h-6 w-6" />
+                  <span className="text-sm">Mon profil</span>
+                </Button>
+              </Link>
+              <Link to="/contact">
+                <Button variant="outline" className="w-full h-20 flex-col gap-2">
+                  <Bell className="h-6 w-6" />
+                  <span className="text-sm">Support</span>
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
-
-        {/* Mes cartes conducteur */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              Mes cartes conducteur
-            </CardTitle>
-            <Button size="sm" asChild>
-              <Link to="/cartes/nouvelle">
-                <Plus className="h-3 w-3 mr-1" />
-                Nouvelle demande
-              </Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {userDriverCards.length > 0 ? (
-              <div className="space-y-3">
-                {userDriverCards.map((carte) => (
-                  <div key={carte.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">{carte.numero}</p>
-                      <p className="text-sm text-muted-foreground">
-                        Expire le {new Date(carte.dateExpiration).toLocaleDateString('fr-FR')}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={
-                        carte.statut === 'validee' ? 'default' :
-                        carte.statut === 'en_attente' ? 'secondary' :
-                        'destructive'
-                      }>
-                        {carte.statut.replace('_', ' ').toUpperCase()}
-                      </Badge>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={`/cartes/${carte.id}`}>Détails</Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground mb-4">Aucune carte conducteur</p>
-                <Button asChild>
-                  <Link to="/cartes/nouvelle">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Faire ma première demande
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Mes sessions récentes */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Mes sessions récentes
-            </CardTitle>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/sessions">Voir toutes</Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {userSessions.length > 0 ? (
-              <div className="space-y-3">
-                {userSessions.slice(0, 3).map((session) => (
-                  <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">
-                        {session.trajetDepart} → {session.trajetArrivee}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(session.dateDebut).toLocaleDateString('fr-FR')} - 
-                        {session.distanceParcourue} km - {Math.floor(session.dureeConduite / 60)}h{session.dureeConduite % 60}min
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {session.infractions.length > 0 && (
-                        <Badge variant="destructive">
-                          <AlertCircle className="h-3 w-3 mr-1" />
-                          {session.infractions.length} infraction(s)
-                        </Badge>
-                      )}
-                      <Button variant="outline" size="sm" asChild>
-                        <Link to={`/sessions/${session.id}`}>Détails</Link>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground">Aucune session enregistrée</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Actions rapides */}
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Documents & Rapports
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Téléchargez vos rapports de conduite et documents officiels.
-              </p>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">
-                  Rapport mensuel
-                </Button>
-                <Button size="sm" variant="outline">
-                  Mes documents
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Mon compte
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Gérez vos informations personnelles et préférences.
-              </p>
-              <div className="flex gap-2">
-                <Button size="sm" asChild>
-                  <Link to="/profil">Mon profil</Link>
-                </Button>
-                <Button size="sm" variant="outline" asChild>
-                  <Link to="/profil/edit">Modifier</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </PageLayout>
   );

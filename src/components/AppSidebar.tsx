@@ -54,6 +54,7 @@ const AppSidebar: React.FC = () => {
     { title: "Tableau de bord", url: "/entreprise", icon: Home },
     { title: "Mandataires", url: "/entreprise/mandataires", icon: Users },
     { title: "Demandes", url: "/entreprise/demandes", icon: FileText },
+    { title: "Entreprises", url: "/entreprise/entreprises", icon: Building2 },
     { title: "Véhicules", url: "/vehicules", icon: Truck },
     { title: "Documents", url: "/entreprise/documents", icon: CreditCard },
     { title: "Sessions", url: "/sessions", icon: Clock },

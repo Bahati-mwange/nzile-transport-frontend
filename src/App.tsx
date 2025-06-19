@@ -14,13 +14,15 @@ import RegisterEntreprise from "./pages/RegisterEntreprise";
 import RegisterParticulier from "./pages/RegisterParticulier";
 
 // Pages particuliers
-import Dashboard from "./pages/Dashboard";
+import DashboardParticulier from "./pages/DashboardParticulier";
 import MesDemandes from "./pages/MesDemandes";
 import NouvelleDemande from "./pages/NouvelleDemande";
 
 // Pages entreprises
 import DashboardEntreprise from "./pages/DashboardEntreprise";
 import EntrepriseMandataires from "./pages/EntrepriseMandataires";
+import EntrepriseEntreprises from "./pages/EntrepriseEntreprises";
+import EntrepriseDocuments from "./pages/EntrepriseDocuments";
 
 // Pages communes
 import Cartes from "./pages/Cartes";
@@ -60,7 +62,7 @@ const App = () => (
           {/* Pages particuliers */}
           <Route path="/dashboard" element={
             <ProtectedRoute allowedUserTypes={['particulier']}>
-              <Dashboard />
+              <DashboardParticulier />
             </ProtectedRoute>
           } />
           
@@ -107,15 +109,21 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          <Route path="/entreprise/suivi/:id" element={
+          <Route path="/entreprise/entreprises" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
-              <CarteDetail />
+              <EntrepriseEntreprises />
             </ProtectedRoute>
           } />
           
           <Route path="/entreprise/documents" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
-              <Cartes />
+              <EntrepriseDocuments />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/suivi/:id" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <CarteDetail />
             </ProtectedRoute>
           } />
           
