@@ -270,6 +270,17 @@ const mockUsers: User[] = [
   }
 ];
 
+// Ajout des nouvelles imports pour les données mockées
+import { 
+  mockSessions, 
+  mockDashboardStats, 
+  mockChartData, 
+  mockAlertes,
+  mockVehiculeDetails,
+  Session,
+  DashboardStats
+} from '../data/mockData';
+
 export const useApiData = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -321,6 +332,45 @@ export const useApiData = () => {
   const getDriverCardById = (id: string) => apiCall(mockDriverCards.find(dc => dc.id === id));
   const getSessionById = (id: string) => apiCall(mockSessions.find(s => s.id === id));
 
+  // Nouvelles fonctions pour les dashboards
+  const getDashboardStats = (type: 'particulier' | 'entreprise') => {
+    return mockDashboardStats[type];
+  };
+
+  const getChartData = (type: 'tempsConduite' | 'vitesseSession' | 'evolutionDemandes') => {
+    return mockChartData[type];
+  };
+
+  const getSessions = (): Session[] => {
+    return mockSessions;
+  };
+
+  const getSessionById = (id: string): Session | undefined => {
+    return mockSessions.find(s => s.id === id);
+  };
+
+  const getAlertes = () => {
+    return mockAlertes;
+  };
+
+  const getVehiculeDetails = (vehiculeId: string) => {
+    return mockVehiculeDetails[vehiculeId as keyof typeof mockVehiculeDetails];
+  };
+
+  const getSessionsByDriver = (driverId: string): Session[] => {
+    return mockSessions.filter(s => s.driverId === driverId);
+  };
+
+  const getSessionsByVehicle = (vehicleId: string): Session[] => {
+    return mockSessions.filter(s => s.vehicleId === vehicleId);
+  };
+
+  const getInfractionsByDriver = (driverId: string) => {
+    const sessions = getSessionsByDriver(driverId);
+    const infractions = sessions.flatMap(s => s.infractions);
+    return infractions;
+  };
+
   // Chargement initial des données utilisateur
   useEffect(() => {
     const loadUserFromStorage = () => {
@@ -359,13 +409,25 @@ export const useApiData = () => {
     getVehicleById,
     getDriverCardById,
     getSessionById,
+    getDashboardStats,
+    getChartData,
+    getSessions,
+    getSessionById,
+    getAlertes,
+    getVehiculeDetails,
+    getSessionsByDriver,
+    getSessionsByVehicle,
+    getInfractionsByDriver,
     mockData: {
       drivers: mockDrivers,
       companies: mockCompanies,
       vehicles: mockVehicles,
       driverCards: mockDriverCards,
       sessions: mockSessions,
-      users: mockUsers
+      dashboardStats: mockDashboardStats,
+      chartData: mockChartData,
+      alertes: mockAlertes,
+      vehiculeDetails: mockVehiculeDetails
     }
   };
 };

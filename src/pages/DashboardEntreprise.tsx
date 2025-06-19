@@ -1,15 +1,32 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
 import PageLayout from '@/components/PageLayout';
+import DashboardCard from '@/components/DashboardCard';
+import SessionChart from '@/components/SessionChart';
+import AlertesCritiques from '@/components/AlertesCritiques';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Truck, CreditCard, Clock, Plus, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Badge } from "@/components/ui/badge";
+import { 
+  Users, 
+  Car, 
+  Clock, 
+  AlertTriangle,
+  Download,
+  Upload,
+  TrendingUp,
+  Activity,
+  Plus,
+  FileText
+} from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 const DashboardEntreprise: React.FC = () => {
-  const { currentUser, isInitialized, mockData } = useApiData();
+  const navigate = useNavigate();
+  const { currentUser, isInitialized, getDashboardStats, getChartData, getAlertes } = useApiData();
+  const [alertes, setAlertes] = useState(getAlertes());
 
   if (!isInitialized) {
     return (
@@ -20,190 +37,198 @@ const DashboardEntreprise: React.FC = () => {
   }
 
   if (!currentUser || currentUser.type !== 'entreprise') {
-    return (
-      <PageLayout title="Accès refusé">
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Accès réservé aux entreprises</p>
-        </div>
-      </PageLayout>
-    );
+    navigate('/login');
+    return null;
   }
 
-  const profile = currentUser.profile as any;
-  const stats = {
-    chauffeurs: mockData.drivers.filter(d => d.entrepriseId === currentUser.id).length,
-    vehicules: mockData.vehicles.filter(v => v.entrepriseId === currentUser.id).length,
-    cartesActives: mockData.driverCards.filter(c => c.statut === 'validee').length,
-    sessionsRecentes: mockData.sessions.length
+  const stats = getDashboardStats('entreprise');
+  const chartData = getChartData('evolutionDemandes');
+
+  const handleResoudreAlerte = (alerteId: string) => {
+    setAlertes(prev => prev.map(a => 
+      a.id === alerteId ? { ...a, resolu: true } : a
+    ));
   };
 
+  const actionButtons = (
+    <div className="flex gap-2">
+      <Button variant="outline" size="sm">
+        <Download className="h-4 w-4 mr-2" />
+        <span className="hidden sm:inline">Exporter</span>
+      </Button>
+      <Button variant="outline" size="sm">
+        <Upload className="h-4 w-4 mr-2" />
+        <span className="hidden sm:inline">Uploader session</span>
+      </Button>
+    </div>
+  );
+
   return (
-    <PageLayout title={`Tableau de bord - ${profile.denomination}`}>
+    <PageLayout title="Dashboard Entreprise" actions={actionButtons}>
       <div className="space-y-6">
-        {/* Statistiques principales */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Chauffeurs</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.chauffeurs}</div>
-              <p className="text-xs text-muted-foreground">
-                +2 ce mois-ci
-              </p>
-            </CardContent>
-          </Card>
+        {/* En-tête entreprise */}
+        <Card className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold">
+                  {(currentUser.profile as any).denomination}
+                </h2>
+                <p className="text-green-100">
+                  Vue d'ensemble des activités du {new Date().toLocaleDateString('fr-FR')}
+                </p>
+                <div className="flex items-center gap-4 text-sm">
+                  <span>RCCM: {(currentUser.profile as any).rccm}</span>
+                  <span>•</span>
+                  <span>{(currentUser.profile as any).ville}, Gabon</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Badge className="bg-white text-green-700 px-3 py-1">
+                  {stats.alertesCritiques} alertes
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Métriques principales */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <DashboardCard
+            title="Sessions aujourd'hui"
+            value={stats.sessionsAujourdhui}
+            icon={Activity}
+            iconColor="text-blue-600"
+            onClick={() => navigate('/entreprise/sessions')}
+          />
           
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Véhicules</CardTitle>
-              <Truck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.vehicules}</div>
-              <p className="text-xs text-muted-foreground">
-                +1 ce mois-ci
-              </p>
-            </CardContent>
-          </Card>
+          <DashboardCard
+            title="Chauffeurs en ligne"
+            value={`${stats.chauffeursEnLigne}/15`}
+            icon={Users}
+            iconColor="text-green-600"
+            onClick={() => navigate('/chauffeurs')}
+          />
           
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cartes actives</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.cartesActives}</div>
-              <p className="text-xs text-muted-foreground">
-                {Math.round((stats.cartesActives / stats.chauffeurs) * 100)}% des chauffeurs
-              </p>
-            </CardContent>
-          </Card>
+          <DashboardCard
+            title="Véhicules actifs"
+            value={`${stats.vehiculesActifs}/12`}
+            icon={Car}
+            iconColor="text-purple-600"
+            onClick={() => navigate('/vehicules')}
+          />
           
+          <DashboardCard
+            title="Vitesse moyenne"
+            value={`${stats.vitesseMoyenne} km/h`}
+            icon={TrendingUp}
+            iconColor="text-orange-600"
+          />
+        </div>
+
+        {/* Temps et infractions */}
+        <div className="grid md:grid-cols-3 gap-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Sessions récentes</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.sessionsRecentes}</div>
-              <p className="text-xs text-muted-foreground">
-                Cette semaine
-              </p>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Temps conduite total</p>
+                  <p className="text-2xl font-bold text-blue-600">{stats.tempsConduiteTotal}h</p>
+                  <p className="text-xs text-gray-500">Aujourd'hui</p>
+                </div>
+                <Clock className="h-8 w-8 text-blue-600" />
+              </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Temps repos total</p>
+                  <p className="text-2xl font-bold text-green-600">{stats.tempsReposTotal}h</p>
+                  <p className="text-xs text-gray-500">Aujourd'hui</p>
+                </div>
+                <Clock className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Infractions détectées</p>
+                  <p className="text-2xl font-bold text-red-600">{stats.infractionsDuJour}</p>
+                  <p className="text-xs text-gray-500">Aujourd'hui</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-red-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Graphiques et alertes */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          <SessionChart
+            data={chartData}
+            type="bar"
+            title="Évolution des demandes (6 derniers mois)"
+            dataKeys={[
+              { key: 'validees', color: '#10b981', name: 'Validées' },
+              { key: 'enCours', color: '#f59e0b', name: 'En cours' },
+              { key: 'rejetees', color: '#ef4444', name: 'Rejetées' }
+            ]}
+          />
+
+          <AlertesCritiques 
+            alertes={alertes}
+            onResoudre={handleResoudreAlerte}
+          />
         </div>
 
         {/* Actions rapides */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Gestion des chauffeurs
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Gérez vos chauffeurs, leurs cartes et leurs qualifications.
-              </p>
-              <div className="flex gap-2">
-                <Button size="sm" asChild>
-                  <Link to="/chauffeurs/nouveau">
-                    <Plus className="h-3 w-3 mr-1" />
-                    Nouveau
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/chauffeurs">Voir tous</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Truck className="h-5 w-5" />
-                Gestion de la flotte
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Administrez vos véhicules et leurs équipements.
-              </p>
-              <div className="flex gap-2">
-                <Button size="sm" asChild>
-                  <Link to="/vehicules/nouveau">
-                    <Plus className="h-3 w-3 mr-1" />
-                    Nouveau
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/vehicules">Voir tous</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Cartes conducteur
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Suivez les demandes et renouvellements de cartes.
-              </p>
-              <div className="flex gap-2">
-                <Button size="sm" asChild>
-                  <Link to="/cartes/nouvelle">
-                    <Plus className="h-3 w-3 mr-1" />
-                    Nouvelle
-                  </Link>
-                </Button>
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/cartes">Voir toutes</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Activité récente */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Activité récente
-            </CardTitle>
+            <CardTitle>Actions rapides</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 border rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Carte conducteur validée</p>
-                  <p className="text-xs text-muted-foreground">Marie-Claire MBADINGA - Il y a 2 heures</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 border rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Nouveau véhicule ajouté</p>
-                  <p className="text-xs text-muted-foreground">Mercedes Actros - GA-3456-LV - Il y a 1 jour</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 border rounded-lg">
-                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">Session chronotachygraphe terminée</p>
-                  <p className="text-xs text-muted-foreground">Jean-Baptiste ONDO - 485 km parcourus - Il y a 2 jours</p>
-                </div>
-              </div>
+            <div className="grid md:grid-cols-4 gap-4">
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col gap-2"
+                onClick={() => navigate('/chauffeurs/nouveau')}
+              >
+                <Plus className="h-6 w-6" />
+                <span>Ajouter chauffeur</span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col gap-2"
+                onClick={() => navigate('/vehicules/nouveau')}
+              >
+                <Car className="h-6 w-6" />
+                <span>Nouveau véhicule</span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col gap-2"
+                onClick={() => navigate('/entreprise/demandes')}
+              >
+                <FileText className="h-6 w-6" />
+                <span>Nouvelle demande</span>
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                className="h-20 flex flex-col gap-2"
+                onClick={() => navigate('/entreprise/sessions')}
+              >
+                <Activity className="h-6 w-6" />
+                <span>Voir sessions</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
