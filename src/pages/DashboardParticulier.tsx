@@ -1,331 +1,219 @@
 
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React from 'react';
+import { useApiData } from '@/hooks/useApiData';
+import PageLayout from '@/components/PageLayout';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useApiData } from '@/hooks/useApiData';
+import { CreditCard, Clock, Plus, User, FileText, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import Navigation from '@/components/Navigation';
-import { 
-  CreditCard, 
-  Clock, 
-  AlertCircle, 
-  CheckCircle,
-  Calendar,
-  FileText,
-  Download,
-  Plus
-} from 'lucide-react';
 
 const DashboardParticulier: React.FC = () => {
-  const { currentUser, isInitialized, getDriverCards, getTachographSessions, isLoading } = useApiData();
-  const [userCard, setUserCard] = useState<any>(null);
-  const [recentSessions, setRecentSessions] = useState<any[]>([]);
-  const navigate = useNavigate();
+  const { currentUser, isInitialized, mockData } = useApiData();
 
-  useEffect(() => {
-    console.log('DashboardParticulier - État:', { isInitialized, currentUser: currentUser?.email, type: currentUser?.type });
-    
-    if (isInitialized) {
-      if (!currentUser) {
-        console.log('Aucun utilisateur connecté, redirection vers login');
-        navigate('/login');
-        return;
-      }
-      
-      if (currentUser.type !== 'particulier') {
-        console.log('Utilisateur non-particulier, redirection vers login');
-        navigate('/login');
-        return;
-      }
-
-      console.log('Utilisateur particulier connecté, chargement des données');
-      loadUserData();
-    }
-  }, [currentUser, isInitialized, navigate]);
-
-  const loadUserData = async () => {
-    try {
-      const [cards, sessions] = await Promise.all([
-        getDriverCards(),
-        getTachographSessions()
-      ]);
-
-      const driverId = currentUser?.profile.id;
-      const card = cards.find(c => c.driverId === driverId);
-      const userSessions = sessions.filter(s => s.driverId === driverId).slice(0, 3);
-
-      setUserCard(card);
-      setRecentSessions(userSessions);
-    } catch (error) {
-      console.error('Erreur lors du chargement des données utilisateur:', error);
-    }
-  };
-
-  // Affichage du loader pendant l'initialisation
-  if (!isInitialized || isLoading) {
+  if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navigation />
+      <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" text="Chargement de votre espace..." />
       </div>
     );
   }
 
-  // Si pas d'utilisateur ou mauvais type après initialisation
   if (!currentUser || currentUser.type !== 'particulier') {
-    return null;
+    return (
+      <PageLayout title="Accès refusé">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground">Accès réservé aux particuliers</p>
+        </div>
+      </PageLayout>
+    );
   }
 
-  const driver = currentUser.profile as any;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'validee':
-        return 'bg-green-100 text-green-800';
-      case 'en_attente':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'expiree':
-        return 'bg-red-100 text-red-800';
-      case 'rejetee':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'validee':
-        return 'Validée';
-      case 'en_attente':
-        return 'En attente';
-      case 'expiree':
-        return 'Expirée';
-      case 'rejetee':
-        return 'Rejetée';
-      default:
-        return 'Inconnu';
-    }
-  };
+  const profile = currentUser.profile as any;
+  const userDriverCards = mockData.driverCards.filter(c => c.driverId === currentUser.id);
+  const userSessions = mockData.sessions.filter(s => s.driverId === currentUser.id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Mon Espace - {driver.prenom} {driver.nom}
-          </h1>
-          <p className="mt-2 text-gray-600">
-            Gérez votre carte conducteur et suivez vos activités
-          </p>
-        </div>
-
-        {/* Carte conducteur */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Ma carte conducteur
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {userCard ? (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">Numéro de carte</p>
-                      <p className="text-sm text-gray-600">{userCard.numero}</p>
-                    </div>
-                    <Badge className={getStatusColor(userCard.statut)}>
-                      {getStatusLabel(userCard.statut)}
-                    </Badge>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="font-medium text-gray-700">Date d'émission</p>
-                      <p className="text-gray-600">
-                        {new Date(userCard.dateEmission).toLocaleDateString('fr-FR')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-gray-700">Date d'expiration</p>
-                      <p className="text-gray-600">
-                        {new Date(userCard.dateExpiration).toLocaleDateString('fr-FR')}
-                      </p>
-                    </div>
-                  </div>
-
-                  {userCard.statut === 'validee' && (
-                    <Button 
-                      onClick={() => navigate(`/cartes/${userCard.id}`)}
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Télécharger la carte
-                    </Button>
-                  )}
-
-                  {userCard.statut === 'expiree' && (
-                    <Button 
-                      onClick={() => navigate('/cartes/nouvelle')}
-                      className="w-full bg-transport-primary hover:bg-blue-700"
-                    >
-                      Renouveler la carte
-                    </Button>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <CreditCard className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">
-                    Vous n'avez pas encore de carte conducteur
-                  </p>
-                  <Button 
-                    onClick={() => navigate('/cartes/nouvelle')}
-                    className="bg-transport-primary hover:bg-blue-700"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Demander une carte
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Informations personnelles */}
-          <Card className="animate-fade-in">
-            <CardHeader>
-              <CardTitle>Mes informations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3 text-sm">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-medium text-gray-700">CNI</p>
-                    <p className="text-gray-600">{driver.cni}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-700">Permis</p>
-                    <p className="text-gray-600">{driver.permis}</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-700">Téléphone</p>
-                  <p className="text-gray-600">{driver.telephone}</p>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-700">Email</p>
-                  <p className="text-gray-600">{driver.email}</p>
-                </div>
-                <div>
-                  <p className="font-medium text-gray-700">Adresse</p>
-                  <p className="text-gray-600">{driver.adresse}, {driver.ville}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sessions récentes */}
-        <Card className="mb-8">
+    <PageLayout title={`Bienvenue ${profile.prenom} ${profile.nom}`}>
+      <div className="space-y-6">
+        {/* Informations utilisateur */}
+        <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="flex items-center">
-                  <Clock className="h-5 w-5 mr-2" />
-                  Mes sessions récentes
-                </CardTitle>
-                <CardDescription>
-                  Dernières activités de conduite enregistrées
-                </CardDescription>
-              </div>
-              <Button 
-                onClick={() => navigate('/sessions')}
-                variant="outline" 
-                size="sm"
-              >
-                Voir tout
-              </Button>
-            </div>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5" />
+              Mon profil
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            {recentSessions.length > 0 ? (
-              <div className="space-y-4">
-                {recentSessions.map((session) => (
-                  <div key={session.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+            <div className="grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Email</p>
+                <p>{profile.email}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Permis de conduire</p>
+                <p className="font-mono">{profile.permis}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground">Ville</p>
+                <p>{profile.ville}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Mes cartes conducteur */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Mes cartes conducteur
+            </CardTitle>
+            <Button size="sm" asChild>
+              <Link to="/cartes/nouvelle">
+                <Plus className="h-3 w-3 mr-1" />
+                Nouvelle demande
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {userDriverCards.length > 0 ? (
+              <div className="space-y-3">
+                {userDriverCards.map((carte) => (
+                  <div key={carte.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">
-                        {session.trajetDepart} → {session.trajetArrivee}
+                      <p className="font-medium">{carte.numero}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Expire le {new Date(carte.dateExpiration).toLocaleDateString('fr-FR')}
                       </p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(session.dateDebut).toLocaleDateString('fr-FR')} - 
-                        {Math.floor(session.dureeConduite / 60)}h{session.dureeConduite % 60}min
-                      </p>
-                      {session.infractions.length > 0 && (
-                        <div className="flex items-center mt-1">
-                          <AlertCircle className="h-4 w-4 text-red-500 mr-1" />
-                          <span className="text-xs text-red-600">
-                            {session.infractions.length} infraction(s)
-                          </span>
-                        </div>
-                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">{session.distanceParcourue} km</p>
-                      <p className="text-sm text-gray-600">
-                        Moy. {session.vitesseMoyenne} km/h
-                      </p>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={
+                        carte.statut === 'validee' ? 'default' :
+                        carte.statut === 'en_attente' ? 'secondary' :
+                        'destructive'
+                      }>
+                        {carte.statut.replace('_', ' ').toUpperCase()}
+                      </Badge>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/cartes/${carte.id}`}>Détails</Link>
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8">
-                <Clock className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-600">Aucune session enregistrée</p>
+                <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">Aucune carte conducteur</p>
+                <Button asChild>
+                  <Link to="/cartes/nouvelle">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Faire ma première demande
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Mes sessions récentes */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5" />
+              Mes sessions récentes
+            </CardTitle>
+            <Button variant="outline" size="sm" asChild>
+              <Link to="/sessions">Voir toutes</Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {userSessions.length > 0 ? (
+              <div className="space-y-3">
+                {userSessions.slice(0, 3).map((session) => (
+                  <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-medium">
+                        {session.trajetDepart} → {session.trajetArrivee}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(session.dateDebut).toLocaleDateString('fr-FR')} - 
+                        {session.distanceParcourue} km - {Math.floor(session.dureeConduite / 60)}h{session.dureeConduite % 60}min
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {session.infractions.length > 0 && (
+                        <Badge variant="destructive">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {session.infractions.length} infraction(s)
+                        </Badge>
+                      )}
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to={`/sessions/${session.id}`}>Détails</Link>
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">Aucune session enregistrée</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Actions rapides */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button 
-            onClick={() => navigate('/cartes')}
-            variant="outline" 
-            className="h-24 flex flex-col items-center justify-center"
-          >
-            <CreditCard className="h-6 w-6 mb-2" />
-            Gérer ma carte
-          </Button>
-          
-          <Button 
-            onClick={() => navigate('/sessions')}
-            variant="outline" 
-            className="h-24 flex flex-col items-center justify-center"
-          >
-            <FileText className="h-6 w-6 mb-2" />
-            Mes rapports
-          </Button>
-          
-          <Button 
-            onClick={() => navigate('/cartes/nouvelle')}
-            className="h-24 flex flex-col items-center justify-center bg-transport-primary hover:bg-blue-700"
-          >
-            <Plus className="h-6 w-6 mb-2" />
-            Nouvelle demande
-          </Button>
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Documents & Rapports
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Téléchargez vos rapports de conduite et documents officiels.
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline">
+                  Rapport mensuel
+                </Button>
+                <Button size="sm" variant="outline">
+                  Mes documents
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Mon compte
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Gérez vos informations personnelles et préférences.
+              </p>
+              <div className="flex gap-2">
+                <Button size="sm" asChild>
+                  <Link to="/profil">Mon profil</Link>
+                </Button>
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/profil/edit">Modifier</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 
