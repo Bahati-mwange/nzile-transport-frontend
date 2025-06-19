@@ -20,15 +20,24 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Soumission du formulaire de connexion');
+    
     try {
       const user = await login(email, password);
+      console.log('Résultat de login:', user);
+      
       if (user) {
         toast({
           title: "Connexion réussie",
           description: "Bienvenue sur transport.nzile.ga"
         });
-        navigate(user.type === 'entreprise' ? '/entreprise' : '/mon-espace');
+        
+        // Navigation basée sur le type d'utilisateur
+        const targetPath = user.type === 'entreprise' ? '/entreprise' : '/mon-espace';
+        console.log('Navigation vers:', targetPath);
+        navigate(targetPath);
       } else {
+        console.log('Connexion échouée - utilisateur non trouvé');
         toast({
           title: "Erreur de connexion",
           description: "Email ou mot de passe incorrect",
@@ -36,11 +45,23 @@ const Login: React.FC = () => {
         });
       }
     } catch (error) {
+      console.error('Erreur lors de la connexion:', error);
       toast({
         title: "Erreur",
         description: "Une erreur s'est produite lors de la connexion",
         variant: "destructive"
       });
+    }
+  };
+
+  // Fonction pour remplir automatiquement les champs de démonstration
+  const fillDemoAccount = (type: 'entreprise' | 'particulier') => {
+    if (type === 'entreprise') {
+      setEmail('admin@transport-gabon.ga');
+      setPassword('password123');
+    } else {
+      setEmail('mc.mbadinga@yahoo.fr');
+      setPassword('password123');
     }
   };
 
@@ -115,9 +136,23 @@ const Login: React.FC = () => {
           </div>
 
           <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
-            <p className="font-medium mb-1">Comptes de démonstration :</p>
-            <p>Entreprise: admin@transport-gabon.ga / password123</p>
-            <p>Particulier: mc.mbadinga@yahoo.fr / password123</p>
+            <p className="font-medium mb-2">Comptes de démonstration :</p>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('entreprise')}
+                className="w-full text-left p-2 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+              >
+                <strong>Entreprise:</strong> admin@transport-gabon.ga / password123
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemoAccount('particulier')}
+                className="w-full text-left p-2 bg-green-50 rounded hover:bg-green-100 transition-colors"
+              >
+                <strong>Particulier:</strong> mc.mbadinga@yahoo.fr / password123
+              </button>
+            </div>
           </div>
         </CardContent>
       </Card>

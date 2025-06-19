@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 // Types pour notre système de transport
@@ -284,12 +283,21 @@ export const useApiData = () => {
   };
 
   const login = async (email: string, password: string): Promise<User | null> => {
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
     const user = mockUsers.find(u => u.email === email && u.password === password);
+    console.log('Tentative de connexion:', { email, password });
+    console.log('Utilisateur trouvé:', user);
+    
     if (user) {
       setCurrentUser(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
+      console.log('Connexion réussie, utilisateur connecté:', user);
     }
-    return apiCall(user || null);
+    
+    setIsLoading(false);
+    return user || null;
   };
 
   const logout = () => {
@@ -313,7 +321,14 @@ export const useApiData = () => {
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      setCurrentUser(JSON.parse(savedUser));
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        console.log('Utilisateur chargé depuis localStorage:', parsedUser);
+        setCurrentUser(parsedUser);
+      } catch (error) {
+        console.error('Erreur lors du parsing de l\'utilisateur sauvegardé:', error);
+        localStorage.removeItem('currentUser');
+      }
     }
   }, []);
 
