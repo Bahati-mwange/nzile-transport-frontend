@@ -273,6 +273,7 @@ const mockUsers: User[] = [
 export const useApiData = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Simulation d'API avec délai
   const apiCall = async <T>(data: T): Promise<T> => {
@@ -283,17 +284,19 @@ export const useApiData = () => {
   };
 
   const login = async (email: string, password: string): Promise<User | null> => {
+    console.log('Tentative de connexion:', { email, password });
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // Simulation d'un délai d'API
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     const user = mockUsers.find(u => u.email === email && u.password === password);
-    console.log('Tentative de connexion:', { email, password });
     console.log('Utilisateur trouvé:', user);
     
     if (user) {
       setCurrentUser(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
-      console.log('Connexion réussie, utilisateur connecté:', user);
+      console.log('Connexion réussie, utilisateur sauvegardé:', user);
     }
     
     setIsLoading(false);
@@ -301,6 +304,7 @@ export const useApiData = () => {
   };
 
   const logout = () => {
+    console.log('Déconnexion utilisateur');
     setCurrentUser(null);
     localStorage.removeItem('currentUser');
   };
@@ -317,24 +321,32 @@ export const useApiData = () => {
   const getDriverCardById = (id: string) => apiCall(mockDriverCards.find(dc => dc.id === id));
   const getSessionById = (id: string) => apiCall(mockSessions.find(s => s.id === id));
 
-  // Chargement des données utilisateur au démarrage
+  // Chargement initial des données utilisateur
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        console.log('Utilisateur chargé depuis localStorage:', parsedUser);
-        setCurrentUser(parsedUser);
-      } catch (error) {
-        console.error('Erreur lors du parsing de l\'utilisateur sauvegardé:', error);
-        localStorage.removeItem('currentUser');
+    const loadUserFromStorage = () => {
+      const savedUser = localStorage.getItem('currentUser');
+      console.log('Vérification localStorage au démarrage:', savedUser ? 'Utilisateur trouvé' : 'Aucun utilisateur');
+      
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          console.log('Utilisateur chargé depuis localStorage:', parsedUser.email, parsedUser.type);
+          setCurrentUser(parsedUser);
+        } catch (error) {
+          console.error('Erreur lors du parsing de l\'utilisateur sauvegardé:', error);
+          localStorage.removeItem('currentUser');
+        }
       }
-    }
+      setIsInitialized(true);
+    };
+
+    loadUserFromStorage();
   }, []);
 
   return {
     isLoading,
     currentUser,
+    isInitialized,
     login,
     logout,
     getDrivers,

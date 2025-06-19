@@ -19,35 +19,52 @@ import {
 } from 'lucide-react';
 
 const DashboardParticulier: React.FC = () => {
-  const { currentUser, getDriverCards, getTachographSessions, isLoading } = useApiData();
+  const { currentUser, isInitialized, getDriverCards, getTachographSessions, isLoading } = useApiData();
   const [userCard, setUserCard] = useState<any>(null);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!currentUser || currentUser.type !== 'particulier') {
-      navigate('/login');
-      return;
-    }
+    console.log('DashboardParticulier - État:', { isInitialized, currentUser: currentUser?.email, type: currentUser?.type });
+    
+    if (isInitialized) {
+      if (!currentUser) {
+        console.log('Aucun utilisateur connecté, redirection vers login');
+        navigate('/login');
+        return;
+      }
+      
+      if (currentUser.type !== 'particulier') {
+        console.log('Utilisateur non-particulier, redirection vers login');
+        navigate('/login');
+        return;
+      }
 
-    const loadUserData = async () => {
+      console.log('Utilisateur particulier connecté, chargement des données');
+      loadUserData();
+    }
+  }, [currentUser, isInitialized, navigate]);
+
+  const loadUserData = async () => {
+    try {
       const [cards, sessions] = await Promise.all([
         getDriverCards(),
         getTachographSessions()
       ]);
 
-      const driverId = currentUser.profile.id;
+      const driverId = currentUser?.profile.id;
       const card = cards.find(c => c.driverId === driverId);
       const userSessions = sessions.filter(s => s.driverId === driverId).slice(0, 3);
 
       setUserCard(card);
       setRecentSessions(userSessions);
-    };
+    } catch (error) {
+      console.error('Erreur lors du chargement des données utilisateur:', error);
+    }
+  };
 
-    loadUserData();
-  }, [currentUser, navigate]);
-
-  if (isLoading) {
+  // Affichage du loader pendant l'initialisation
+  if (!isInitialized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
@@ -56,6 +73,7 @@ const DashboardParticulier: React.FC = () => {
     );
   }
 
+  // Si pas d'utilisateur ou mauvais type après initialisation
   if (!currentUser || currentUser.type !== 'particulier') {
     return null;
   }

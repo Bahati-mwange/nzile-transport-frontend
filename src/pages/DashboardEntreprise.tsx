@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 const DashboardEntreprise: React.FC = () => {
-  const { currentUser, getDrivers, getVehicles, getDriverCards, getTachographSessions, isLoading } = useApiData();
+  const { currentUser, isInitialized, getDrivers, getVehicles, getDriverCards, getTachographSessions, isLoading } = useApiData();
   const [stats, setStats] = useState({
     totalDrivers: 0,
     totalVehicles: 0,
@@ -30,12 +30,28 @@ const DashboardEntreprise: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!currentUser || currentUser.type !== 'entreprise') {
-      navigate('/login');
-      return;
-    }
+    console.log('DashboardEntreprise - État:', { isInitialized, currentUser: currentUser?.email, type: currentUser?.type });
+    
+    if (isInitialized) {
+      if (!currentUser) {
+        console.log('Aucun utilisateur connecté, redirection vers login');
+        navigate('/login');
+        return;
+      }
+      
+      if (currentUser.type !== 'entreprise') {
+        console.log('Utilisateur non-entreprise, redirection vers login');
+        navigate('/login');
+        return;
+      }
 
-    const loadStats = async () => {
+      console.log('Utilisateur entreprise connecté, chargement des statistiques');
+      loadStats();
+    }
+  }, [currentUser, isInitialized, navigate]);
+
+  const loadStats = async () => {
+    try {
       const [drivers, vehicles, cards, sessions] = await Promise.all([
         getDrivers(),
         getVehicles(),
@@ -43,7 +59,7 @@ const DashboardEntreprise: React.FC = () => {
         getTachographSessions()
       ]);
 
-      const companyId = currentUser.profile.id;
+      const companyId = currentUser?.profile.id;
       const companyDrivers = drivers.filter(d => d.entrepriseId === companyId);
       const companyVehicles = vehicles.filter(v => v.entrepriseId === companyId);
       const driverIds = companyDrivers.map(d => d.id);
@@ -58,12 +74,13 @@ const DashboardEntreprise: React.FC = () => {
         totalSessions: companySessions.length,
         infractions: companySessions.reduce((acc, s) => acc + s.infractions.length, 0)
       });
-    };
+    } catch (error) {
+      console.error('Erreur lors du chargement des statistiques:', error);
+    }
+  };
 
-    loadStats();
-  }, [currentUser, navigate]);
-
-  if (isLoading) {
+  // Affichage du loader pendant l'initialisation
+  if (!isInitialized || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
@@ -72,6 +89,7 @@ const DashboardEntreprise: React.FC = () => {
     );
   }
 
+  // Si pas d'utilisateur ou mauvais type après initialisation
   if (!currentUser || currentUser.type !== 'entreprise') {
     return null;
   }
