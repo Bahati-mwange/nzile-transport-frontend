@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 // Types pour notre système de transport
@@ -218,41 +219,6 @@ const mockDriverCards: DriverCard[] = [
   }
 ];
 
-const mockSessions: TachographSession[] = [
-  {
-    id: '1',
-    driverId: '1',
-    vehicleId: '1',
-    carteId: '1',
-    dateDebut: '2024-01-15T06:00:00',
-    dateFin: '2024-01-15T18:30:00',
-    dureeConduite: 450, // en minutes
-    dureeRepos: 90,
-    distanceParcourue: 485,
-    vitesseMoyenne: 65,
-    vitesseMax: 90,
-    infractions: [],
-    trajetDepart: 'Libreville',
-    trajetArrivee: 'Franceville'
-  },
-  {
-    id: '2',
-    driverId: '2',
-    vehicleId: '3',
-    carteId: '2',
-    dateDebut: '2024-01-16T07:15:00',
-    dateFin: '2024-01-16T16:45:00',
-    dureeConduite: 330,
-    dureeRepos: 120,
-    distanceParcourue: 245,
-    vitesseMoyenne: 45,
-    vitesseMax: 85,
-    infractions: ['Excès de vitesse mineur'],
-    trajetDepart: 'Libreville',
-    trajetArrivee: 'Lambaréné'
-  }
-];
-
 const mockUsers: User[] = [
   {
     id: '1',
@@ -270,7 +236,7 @@ const mockUsers: User[] = [
   }
 ];
 
-// Ajout des nouvelles imports pour les données mockées
+// Import des données mockées depuis le fichier séparé
 import { 
   mockSessions, 
   mockDashboardStats, 
@@ -330,7 +296,6 @@ export const useApiData = () => {
   const getCompanyById = (id: string) => apiCall(mockCompanies.find(c => c.id === id));
   const getVehicleById = (id: string) => apiCall(mockVehicles.find(v => v.id === id));
   const getDriverCardById = (id: string) => apiCall(mockDriverCards.find(dc => dc.id === id));
-  const getSessionById = (id: string) => apiCall(mockSessions.find(s => s.id === id));
 
   // Nouvelles fonctions pour les dashboards
   const getDashboardStats = (type: 'particulier' | 'entreprise') => {
@@ -412,7 +377,6 @@ export const useApiData = () => {
     getDashboardStats,
     getChartData,
     getSessions,
-    getSessionById,
     getAlertes,
     getVehiculeDetails,
     getSessionsByDriver,
