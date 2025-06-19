@@ -6,14 +6,23 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// Pages
+// Pages publiques
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import RegisterEntreprise from "./pages/RegisterEntreprise";
 import RegisterParticulier from "./pages/RegisterParticulier";
+
+// Pages particuliers
+import Dashboard from "./pages/Dashboard";
+import MesDemandes from "./pages/MesDemandes";
+import NouvelleDemande from "./pages/NouvelleDemande";
+
+// Pages entreprises
 import DashboardEntreprise from "./pages/DashboardEntreprise";
-import DashboardParticulier from "./pages/DashboardParticulier";
+import EntrepriseMandataires from "./pages/EntrepriseMandataires";
+
+// Pages communes
 import Cartes from "./pages/Cartes";
 import NouvelleCarteForm from "./pages/NouvelleCarteForm";
 import CarteDetail from "./pages/CarteDetail";
@@ -26,6 +35,11 @@ import Vehicules from "./pages/Vehicules";
 import NouveauVehicule from "./pages/NouveauVehicule";
 import Profil from "./pages/Profil";
 import NotFound from "./pages/NotFound";
+
+// Nouvelles pages
+import Notifications from "./pages/Notifications";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -43,10 +57,77 @@ const App = () => (
           <Route path="/register/entreprise" element={<RegisterEntreprise />} />
           <Route path="/register/particulier" element={<RegisterParticulier />} />
           
-          {/* Pages protégées - Entreprise */}
+          {/* Pages particuliers */}
+          <Route path="/dashboard" element={
+            <ProtectedRoute allowedUserTypes={['particulier']}>
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/mes-demandes" element={
+            <ProtectedRoute allowedUserTypes={['particulier']}>
+              <MesDemandes />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/mes-demandes/nouvelle" element={
+            <ProtectedRoute allowedUserTypes={['particulier']}>
+              <NouvelleDemande />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/mes-demandes/:id" element={
+            <ProtectedRoute allowedUserTypes={['particulier']}>
+              <CarteDetail />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/mes-demandes/:id/edit" element={
+            <ProtectedRoute allowedUserTypes={['particulier']}>
+              <NouvelleCarteForm />
+            </ProtectedRoute>
+          } />
+          
+          {/* Pages entreprises */}
           <Route path="/entreprise" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
               <DashboardEntreprise />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/mandataires" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <EntrepriseMandataires />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/demandes" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <Cartes />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/suivi/:id" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <CarteDetail />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/documents" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <Cartes />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/profil" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <Profil />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/notifications" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <Notifications />
             </ProtectedRoute>
           } />
           
@@ -86,14 +167,7 @@ const App = () => (
             </ProtectedRoute>
           } />
           
-          {/* Pages protégées - Particulier */}
-          <Route path="/mon-espace" element={
-            <ProtectedRoute allowedUserTypes={['particulier']}>
-              <DashboardParticulier />
-            </ProtectedRoute>
-          } />
-          
-          {/* Pages protégées - Communes */}
+          {/* Pages communes */}
           <Route path="/cartes" element={
             <ProtectedRoute>
               <Cartes />
@@ -118,11 +192,50 @@ const App = () => (
             </ProtectedRoute>
           } />
           
+          <Route path="/sessions/:id" element={
+            <ProtectedRoute>
+              <Sessions />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/sessions/nouvelle" element={
+            <ProtectedRoute>
+              <Sessions />
+            </ProtectedRoute>
+          } />
+          
           <Route path="/profil" element={
             <ProtectedRoute>
               <Profil />
             </ProtectedRoute>
           } />
+          
+          <Route path="/profil/edit" element={
+            <ProtectedRoute>
+              <Profil />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/notifications" element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/faq" element={
+            <ProtectedRoute>
+              <FAQ />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/contact" element={
+            <ProtectedRoute>
+              <Contact />
+            </ProtectedRoute>
+          } />
+          
+          {/* Redirections */}
+          <Route path="/mon-espace" element={<Navigate to="/dashboard" replace />} />
           
           {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
