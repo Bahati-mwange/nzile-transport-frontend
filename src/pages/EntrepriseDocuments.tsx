@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -143,7 +142,7 @@ const EntrepriseDocuments: React.FC = () => {
                 <SelectContent>
                   <SelectItem value="tous">Tous les statuts</SelectItem>
                   <SelectItem value="Validé">Validé</SelectItem>
-                  <SelectItem value="En cours">En cours</Select>
+                  <SelectItem value="En cours">En cours</SelectItem>
                   <SelectItem value="Rejeté">Rejeté</SelectItem>
                   <SelectItem value="Expiré">Expiré</SelectItem>
                 </SelectContent>
