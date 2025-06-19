@@ -297,8 +297,8 @@ export const useApiData = () => {
   const getVehicleById = (id: string) => apiCall(mockVehicles.find(v => v.id === id));
   const getDriverCardById = (id: string) => apiCall(mockDriverCards.find(dc => dc.id === id));
 
-  // Nouvelles fonctions pour les dashboards - correction du type de retour
-  const getDashboardStats = (type: 'particulier' | 'entreprise') => {
+  // Fixed function with proper typing
+  const getDashboardStats = <T extends 'particulier' | 'entreprise'>(type: T): DashboardStats[T] => {
     return mockDashboardStats[type];
   };
 
