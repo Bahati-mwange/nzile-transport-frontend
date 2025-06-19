@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
@@ -29,10 +28,10 @@ const NouvelleDemande: React.FC = () => {
       email: ''
     },
     documents: {
-      cni: null,
-      permis: null,
-      photo: null,
-      certificatMedical: null
+      cni: null as File | null,
+      permis: null as File | null,
+      photo: null as File | null,
+      certificatMedical: null as File | null
     },
     accepteCGU: false
   });
@@ -82,11 +81,11 @@ const NouvelleDemande: React.FC = () => {
     }
   };
 
-  const updateFormData = (section: string, field: string, value: any) => {
+  const updateFormData = (section: keyof typeof formData, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
+        ...(prev[section] as Record<string, any>),
         [field]: value
       }
     }));

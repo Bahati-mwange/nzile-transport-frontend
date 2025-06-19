@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useApiData } from '@/hooks/useApiData';
 import PageLayout from '@/components/PageLayout';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Bell, CheckCircle, AlertCircle, Info, Trash2, MarkAsUnread } from 'lucide-react';
+import { Bell, CheckCircle, AlertCircle, Info, Trash2, Mail } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface Notification {
@@ -215,7 +214,7 @@ const Notifications: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm">
                             {notification.isRead ? (
-                              <MarkAsUnread className="h-4 w-4" />
+                              <Mail className="h-4 w-4" />
                             ) : (
                               <CheckCircle className="h-4 w-4" />
                             )}
