@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -24,7 +23,7 @@ const ChauffeurDetail: React.FC = () => {
     if (!id) return;
     
     // Données enrichies avec carte conducteur
-    const enrichedDriver = {
+    const enrichedDriver: Driver = {
       id: id,
       nom: 'ONDO',
       prenom: 'Jean-Baptiste',
@@ -38,10 +37,14 @@ const ChauffeurDetail: React.FC = () => {
       dateNaissance: '1985-03-15',
       entrepriseId: '1',
       carteConducteur: {
+        id: '1',
+        driverId: id,
         numero: 'GAB-2023-001234',
         dateEmission: '2023-01-15',
         dateExpiration: '2028-01-15',
-        statut: 'valide' as const,
+        statut: 'validee',
+        type: 'conducteur',
+        documents: ['permis.pdf', 'medical.pdf'],
         typeVehicule: 'Poids lourd',
         autoriteEmission: 'Direction Générale des Transports - Gabon'
       }
@@ -59,18 +62,18 @@ const ChauffeurDetail: React.FC = () => {
 
   const getStatutCarteBadgeVariant = (statut: string) => {
     switch (statut) {
-      case 'valide': return 'default';
-      case 'expire_bientot': return 'secondary';
-      case 'expire': return 'destructive';
+      case 'validee': return 'default';
+      case 'en_attente': return 'secondary';
+      case 'expiree': return 'destructive';
       default: return 'outline';
     }
   };
 
   const getStatutCarteLabel = (statut: string) => {
     switch (statut) {
-      case 'valide': return 'Valide';
-      case 'expire_bientot': return 'Expire bientôt';
-      case 'expire': return 'Expirée';
+      case 'validee': return 'Valide';
+      case 'en_attente': return 'En attente';
+      case 'expiree': return 'Expirée';
       default: return statut;
     }
   };
@@ -231,17 +234,21 @@ const ChauffeurDetail: React.FC = () => {
                   </div>
                 </div>
                 
-                <div>
-                  <h3 className="font-medium text-sm text-muted-foreground">Type de véhicule autorisé</h3>
-                  <p>{driver.carteConducteur.typeVehicule}</p>
-                </div>
+                {driver.carteConducteur.typeVehicule && (
+                  <div>
+                    <h3 className="font-medium text-sm text-muted-foreground">Type de véhicule autorisé</h3>
+                    <p>{driver.carteConducteur.typeVehicule}</p>
+                  </div>
+                )}
                 
-                <div>
-                  <h3 className="font-medium text-sm text-muted-foreground">Autorité d'émission</h3>
-                  <p className="text-sm">{driver.carteConducteur.autoriteEmission}</p>
-                </div>
+                {driver.carteConducteur.autoriteEmission && (
+                  <div>
+                    <h3 className="font-medium text-sm text-muted-foreground">Autorité d'émission</h3>
+                    <p className="text-sm">{driver.carteConducteur.autoriteEmission}</p>
+                  </div>
+                )}
                 
-                {driver.carteConducteur.statut === 'expire' && (
+                {driver.carteConducteur.statut === 'expiree' && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                     <p className="text-red-700 text-sm font-medium">
                       ⚠️ Cette carte est expirée. Une demande de renouvellement est nécessaire.
@@ -249,10 +256,10 @@ const ChauffeurDetail: React.FC = () => {
                   </div>
                 )}
                 
-                {driver.carteConducteur.statut === 'expire_bientot' && (
+                {driver.carteConducteur.statut === 'en_attente' && (
                   <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
                     <p className="text-orange-700 text-sm font-medium">
-                      ⚠️ Cette carte expire bientôt. Pensez à la renouveler.
+                      ⚠️ Cette carte est en attente de validation.
                     </p>
                   </div>
                 )}

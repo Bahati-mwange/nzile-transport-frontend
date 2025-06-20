@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 // Types pour notre système de transport
@@ -12,6 +11,7 @@ export interface Driver {
   email: string;
   adresse: string;
   ville: string;
+  lieuNaissance: string;
   dateNaissance: string;
   photo?: string;
   entrepriseId?: string;
@@ -53,6 +53,8 @@ export interface DriverCard {
   statut: 'en_attente' | 'validee' | 'expiree' | 'rejetee';
   type: 'conducteur' | 'entreprise';
   documents: string[];
+  typeVehicule?: string;
+  autoriteEmission?: string;
 }
 
 export interface TachographSession {
@@ -92,6 +94,7 @@ const mockDrivers: Driver[] = [
     email: 'jb.ondo@gmail.com',
     adresse: 'Quartier Glass, Libreville',
     ville: 'Libreville',
+    lieuNaissance: 'Libreville',
     dateNaissance: '1985-03-15',
     entrepriseId: '1'
   },
@@ -105,6 +108,7 @@ const mockDrivers: Driver[] = [
     email: 'mc.mbadinga@yahoo.fr',
     adresse: 'Batterie IV, Libreville',
     ville: 'Libreville',
+    lieuNaissance: 'Libreville',
     dateNaissance: '1990-07-22'
   },
   {
@@ -117,6 +121,7 @@ const mockDrivers: Driver[] = [
     email: 'ph.nzigou@gmail.com',
     adresse: 'Centre-ville, Port-Gentil',
     ville: 'Port-Gentil',
+    lieuNaissance: 'Port-Gentil',
     dateNaissance: '1988-12-05',
     entrepriseId: '2'
   }
@@ -195,7 +200,9 @@ const mockDriverCards: DriverCard[] = [
     dateExpiration: '2028-01-15',
     statut: 'validee',
     type: 'conducteur',
-    documents: ['permis.pdf', 'medical.pdf']
+    documents: ['permis.pdf', 'medical.pdf'],
+    typeVehicule: 'Poids lourd',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
   },
   {
     id: '2',
@@ -205,7 +212,9 @@ const mockDriverCards: DriverCard[] = [
     dateExpiration: '2028-03-10',
     statut: 'validee',
     type: 'conducteur',
-    documents: ['permis.pdf']
+    documents: ['permis.pdf'],
+    typeVehicule: 'Poids lourd',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
   },
   {
     id: '3',
@@ -215,7 +224,9 @@ const mockDriverCards: DriverCard[] = [
     dateExpiration: '2028-06-20',
     statut: 'en_attente',
     type: 'conducteur',
-    documents: ['permis.pdf', 'cni.pdf']
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Poids lourd',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
   }
 ];
 
