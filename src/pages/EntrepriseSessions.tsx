@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -6,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Search, Eye, AlertCircle, MapPin, Calendar, User, Users } from 'lucide-react';
+import { Clock, Search, Eye, AlertCircle, MapPin, Calendar, Users, User } from 'lucide-react';
 import type { Session } from '@/data/mockData';
 
-const Sessions: React.FC = () => {
+const EntrepriseSessions: React.FC = () => {
   const { getSessions, currentUser, isLoading } = useApiData();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,11 +21,8 @@ const Sessions: React.FC = () => {
 
   const loadSessions = async () => {
     const data = getSessions();
-    // Filtrer selon le type d'utilisateur
-    const filteredData = currentUser?.type === 'particulier' 
-      ? data.filter(session => session.driverId === currentUser.id)
-      : data;
-    setSessions(filteredData);
+    // Pour les entreprises, afficher toutes les sessions de leurs conducteurs
+    setSessions(data);
   };
 
   const filteredSessions = sessions.filter(session => 
@@ -85,26 +83,24 @@ const Sessions: React.FC = () => {
                         <span>{formatDuration(session.dureeConduite)} de conduite</span>
                         <span>{session.distanceParcourue} km</span>
                       </div>
-                      {/* Affichage des conducteurs - visible seulement pour les entreprises */}
-                      {currentUser?.type === 'entreprise' && (
-                        <div className="flex items-center gap-2 mt-2">
-                          {session.conducteurs?.secondaire ? (
-                            <div className="flex items-center gap-1 text-sm bg-blue-50 px-2 py-1 rounded">
-                              <Users className="h-3 w-3 text-blue-600" />
-                              <span className="text-blue-800">
-                                {session.conducteurs.principal} • {session.conducteurs.secondaire}
-                              </span>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-sm bg-gray-50 px-2 py-1 rounded">
-                              <User className="h-3 w-3 text-gray-600" />
-                              <span className="text-gray-800">
-                                {session.conducteurs?.principal || session.driverName}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      )}
+                      {/* Affichage des conducteurs */}
+                      <div className="flex items-center gap-2 mt-2">
+                        {session.conducteurs?.secondaire ? (
+                          <div className="flex items-center gap-1 text-sm bg-blue-50 px-2 py-1 rounded">
+                            <Users className="h-3 w-3 text-blue-600" />
+                            <span className="text-blue-800">
+                              {session.conducteurs.principal} • {session.conducteurs.secondaire}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 text-sm bg-gray-50 px-2 py-1 rounded">
+                            <User className="h-3 w-3 text-gray-600" />
+                            <span className="text-gray-800">
+                              {session.conducteurs?.principal || session.driverName}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -192,4 +188,4 @@ const Sessions: React.FC = () => {
   );
 };
 
-export default Sessions;
+export default EntrepriseSessions;

@@ -30,6 +30,12 @@ export interface DashboardStats {
     cartesEnAttente: number;
     cartesExpirees: number;
     prochainExpiration: string;
+    carteStatut: 'active' | 'expire_bientot' | 'expiree' | 'aucune';
+    carteExpiration: string;
+    tempsConduiteTotal: number;
+    tempsRepos: number;
+    infractions: number;
+    sessionsCount: number;
   };
   entreprise: {
     totalConducteurs: number;
@@ -37,7 +43,27 @@ export interface DashboardStats {
     totalCartes: number;
     sessionsAujourdhui: number;
     alertesActives: number;
+    alertesCritiques: number;
+    chauffeursEnLigne: number;
+    vehiculesActifs: number;
+    vitesseMoyenne: number;
+    tempsConduiteTotal: number;
+    tempsReposTotal: number;
+    infractionsDuJour: number;
   };
+}
+
+export interface Alerte {
+  id: string;
+  type: string;
+  titre: string;
+  description: string;
+  message: string;
+  timestamp: string;
+  vehicule?: string;
+  conducteur?: string;
+  gravite: 'critique' | 'warning' | 'info';
+  resolu: boolean;
 }
 
 // Interface pour les données de sessions chronotachygraphe
@@ -149,25 +175,38 @@ export const mockDashboardStats: DashboardStats = {
     cartesValidees: 1,
     cartesEnAttente: 0,
     cartesExpirees: 0,
-    prochainExpiration: '2028-03-10'
+    prochainExpiration: '2028-03-10',
+    carteStatut: 'active',
+    carteExpiration: '2028-03-10',
+    tempsConduiteTotal: 120,
+    tempsRepos: 30,
+    infractions: 1,
+    sessionsCount: 4
   },
   entreprise: {
     totalConducteurs: 25,
     totalVehicules: 18,
     totalCartes: 23,
     sessionsAujourdhui: 12,
-    alertesActives: 3
+    alertesActives: 3,
+    alertesCritiques: 3,
+    chauffeursEnLigne: 15,
+    vehiculesActifs: 12,
+    vitesseMoyenne: 68,
+    tempsConduiteTotal: 45,
+    tempsReposTotal: 12,
+    infractionsDuJour: 2
   }
 };
 
 export const mockChartData = {
   tempsConduite: [
-    { mois: 'Jan', temps: 120 },
-    { mois: 'Fév', temps: 135 },
-    { mois: 'Mar', temps: 98 },
-    { mois: 'Avr', temps: 167 },
-    { mois: 'Mai', temps: 145 },
-    { mois: 'Jun', temps: 189 }
+    { mois: 'Jan', temps: 120, conduite: 120, repos: 30 },
+    { mois: 'Fév', temps: 135, conduite: 135, repos: 35 },
+    { mois: 'Mar', temps: 98, conduite: 98, repos: 25 },
+    { mois: 'Avr', temps: 167, conduite: 167, repos: 42 },
+    { mois: 'Mai', temps: 145, conduite: 145, repos: 36 },
+    { mois: 'Jun', temps: 189, conduite: 189, repos: 47 }
   ],
   vitesseSession: [
     { session: 'S1', vitesseMoy: 68, vitesseMax: 85 },
@@ -176,40 +215,49 @@ export const mockChartData = {
     { session: 'S4', vitesseMoy: 75, vitesseMax: 88 }
   ],
   evolutionDemandes: [
-    { mois: 'Jan', demandes: 12, validees: 10 },
-    { mois: 'Fév', demandes: 15, validees: 13 },
-    { mois: 'Mar', demandes: 8, validees: 7 },
-    { mois: 'Avr', demandes: 18, validees: 16 },
-    { mois: 'Mai', demandes: 14, validees: 12 },
-    { mois: 'Jun', demandes: 20, validees: 18 }
+    { mois: 'Jan', demandes: 12, validees: 10, enCours: 1, rejetees: 1 },
+    { mois: 'Fév', demandes: 15, validees: 13, enCours: 1, rejetees: 1 },
+    { mois: 'Mar', demandes: 8, validees: 7, enCours: 0, rejetees: 1 },
+    { mois: 'Avr', demandes: 18, validees: 16, enCours: 1, rejetees: 1 },
+    { mois: 'Mai', demandes: 14, validees: 12, enCours: 1, rejetees: 1 },
+    { mois: 'Jun', demandes: 20, validees: 18, enCours: 1, rejetees: 1 }
   ]
 };
 
-export const mockAlertes = [
+export const mockAlertes: Alerte[] = [
   {
     id: '1',
     type: 'critique',
     titre: 'Temps de conduite dépassé',
     description: 'Conducteur Jean-Baptiste ONDO a dépassé 9h de conduite continue',
+    message: 'Conducteur Jean-Baptiste ONDO a dépassé 9h de conduite continue',
     timestamp: '2024-01-15T14:30:00Z',
     vehicule: 'GA-3456-LV',
-    conducteur: 'Jean-Baptiste ONDO'
+    conducteur: 'Jean-Baptiste ONDO',
+    gravite: 'critique',
+    resolu: false
   },
   {
     id: '2',
     type: 'warning',
     titre: 'Carte expirant bientôt',
     description: 'La carte GAB-2023-005678 expire dans 15 jours',
+    message: 'La carte GAB-2023-005678 expire dans 15 jours',
     timestamp: '2024-01-14T09:00:00Z',
-    conducteur: 'Marie-Claire MBADINGA'
+    conducteur: 'Marie-Claire MBADINGA',
+    gravite: 'warning',
+    resolu: false
   },
   {
     id: '3',
     type: 'info',
     titre: 'Maintenance programmée',
     description: 'Véhicule GA-7890-PG programmé pour maintenance demain',
+    message: 'Véhicule GA-7890-PG programmé pour maintenance demain',
     timestamp: '2024-01-13T16:45:00Z',
-    vehicule: 'GA-7890-PG'
+    vehicule: 'GA-7890-PG',
+    gravite: 'info',
+    resolu: false
   }
 ];
 
@@ -228,7 +276,12 @@ export const mockVehiculeDetails = {
       numeroSerie: 'CHR-2020-001234',
       derniereTelecharge: '2024-01-15',
       statut: 'Actif'
-    }
+    },
+    prochainControle: '2024-07-01',
+    derniereMaintenance: '2024-01-01',
+    consommationMoyenne: 28.5,
+    kilometrage: 145000,
+    coutEntretien: 2500
   },
   '2': {
     maintenance: {
@@ -244,7 +297,12 @@ export const mockVehiculeDetails = {
       numeroSerie: 'CHR-2021-005678',
       derniereTelecharge: '2024-01-17',
       statut: 'Actif'
-    }
+    },
+    prochainControle: '2024-06-15',
+    derniereMaintenance: '2023-12-15',
+    consommationMoyenne: 32.1,
+    kilometrage: 89000,
+    coutEntretien: 1800
   },
   '3': {
     maintenance: {
@@ -256,7 +314,12 @@ export const mockVehiculeDetails = {
       consommation: 12.8,
       economie: '+5%'
     },
-    chronotachygraphe: null
+    chronotachygraphe: null,
+    prochainControle: '2024-04-10',
+    derniereMaintenance: '2024-01-10',
+    consommationMoyenne: 12.8,
+    kilometrage: 45000,
+    coutEntretien: 800
   }
 };
 

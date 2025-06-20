@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +24,8 @@ import EntrepriseEntreprises from "./pages/EntrepriseEntreprises";
 import EntrepriseDocuments from "./pages/EntrepriseDocuments";
 import EntrepriseNouvelleDemande from "./pages/EntrepriseNouvelleDemande";
 import EntrepriseDemandes from "./pages/EntrepriseDemandes";
+import EntrepriseSessions from "./pages/EntrepriseSessions";
+import EntrepriseChronoData from "./pages/EntrepriseChronoData";
 
 // Pages communes
 import Cartes from "./pages/Cartes";
@@ -101,6 +102,18 @@ const App = () => (
           <Route path="/entreprise" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
               <DashboardEntreprise />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/sessions" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <EntrepriseSessions />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/entreprise/chrono-data" element={
+            <ProtectedRoute allowedUserTypes={['entreprise']}>
+              <EntrepriseChronoData />
             </ProtectedRoute>
           } />
           
