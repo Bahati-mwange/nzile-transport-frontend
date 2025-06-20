@@ -9,7 +9,7 @@ interface Alerte {
   id: string;
   type: string;
   message: string;
-  gravite: 'critique' | 'moyenne' | 'faible';
+  gravite: 'critique' | 'warning' | 'info';
   timestamp: string;
   resolu: boolean;
 }
@@ -23,8 +23,8 @@ const AlertesCritiques: React.FC<AlertesCritiquesProps> = ({ alertes, onResoudre
   const getGraviteColor = (gravite: string) => {
     switch (gravite) {
       case 'critique': return 'bg-red-100 text-red-800 border-red-200';
-      case 'moyenne': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'faible': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'warning': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'info': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       default: return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
@@ -32,7 +32,7 @@ const AlertesCritiques: React.FC<AlertesCritiquesProps> = ({ alertes, onResoudre
   const getIcon = (gravite: string) => {
     switch (gravite) {
       case 'critique': return <AlertTriangle className="h-4 w-4 text-red-600" />;
-      case 'moyenne': return <Clock className="h-4 w-4 text-orange-600" />;
+      case 'warning': return <Clock className="h-4 w-4 text-orange-600" />;
       default: return <AlertTriangle className="h-4 w-4 text-yellow-600" />;
     }
   };
