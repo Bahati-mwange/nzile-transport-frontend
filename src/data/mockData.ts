@@ -80,6 +80,20 @@ export interface ChronoData {
   violationType?: string;
 }
 
+// Nouvelle interface pour les sessions de conduite avec toutes les propriétés nécessaires
+export interface ChronoSessionData {
+  id: string;
+  date: string;
+  driverId: string;
+  vehicleId: string;
+  typeConduite: 'solo' | 'partage';
+  tempsConduite: number;
+  distance: number;
+  vitesseMoyenne: number;
+  infractions: number;
+  statut: 'valide' | 'anomalie';
+}
+
 export const mockSessions: Session[] = [
   {
     id: '1',
@@ -490,5 +504,81 @@ export const mockChronoData = [
     demandeEnCours: true,
     dateDemande: '2024-01-10',
     statutDemande: 'En attente d\'approbation'
+  }
+];
+
+// Nouvelles données de sessions avec les propriétés attendues
+export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
+  {
+    id: '1',
+    date: '2024-01-15',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'partage',
+    tempsConduite: 8,
+    distance: 420,
+    vitesseMoyenne: 68,
+    infractions: 1,
+    statut: 'valide'
+  },
+  {
+    id: '2',
+    date: '2024-01-16',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'solo',
+    tempsConduite: 4,
+    distance: 180,
+    vitesseMoyenne: 45,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '3',
+    date: '2024-01-17',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'solo',
+    tempsConduite: 9,
+    distance: 650,
+    vitesseMoyenne: 72,
+    infractions: 2,
+    statut: 'anomalie'
+  },
+  {
+    id: '4',
+    date: '2024-01-18',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'partage',
+    tempsConduite: 10,
+    distance: 780,
+    vitesseMoyenne: 75,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '5',
+    date: '2024-01-19',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'solo',
+    tempsConduite: 6,
+    distance: 320,
+    vitesseMoyenne: 53,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '6',
+    date: '2024-01-20',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'solo',
+    tempsConduite: 7,
+    distance: 480,
+    vitesseMoyenne: 69,
+    infractions: 1,
+    statut: 'valide'
   }
 ];

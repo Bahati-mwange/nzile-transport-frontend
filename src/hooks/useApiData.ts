@@ -256,9 +256,11 @@ import {
   mockVehiculeDetails,
   mockChronoData,
   mockChronoSessionData,
+  mockChronoSessionDataWithDetails,
   Session,
   DashboardStats,
-  ChronoData
+  ChronoData,
+  ChronoSessionData
 } from '../data/mockData';
 
 export const useApiData = () => {
@@ -300,7 +302,7 @@ export const useApiData = () => {
     localStorage.removeItem('currentUser');
   };
 
-  const getDrivers = () => apiCall(mockDrivers);
+  const getDrivers = (): Driver[] => mockDrivers;
   const getCompanies = () => apiCall(mockCompanies);
   const getVehicles = () => apiCall(mockVehicles);
   const getDriverCards = () => apiCall(mockDriverCards);
@@ -354,8 +356,8 @@ export const useApiData = () => {
     return mockChronoData;
   };
 
-  const getChronoSessionData = () => {
-    return mockChronoSessionData;
+  const getChronoSessionData = (): ChronoSessionData[] => {
+    return mockChronoSessionDataWithDetails;
   };
 
   const getChronoDataByVehicle = (vehicleId: string) => {
