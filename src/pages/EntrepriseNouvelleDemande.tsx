@@ -1,23 +1,16 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useApiData } from '@/hooks/useApiData';
 import { 
   Users, 
   Plus, 
-  FileText, 
-  CreditCard, 
-  Clock, 
   Eye,
-  CheckCircle,
   AlertCircle,
   Truck
 } from 'lucide-react';
@@ -31,18 +24,20 @@ const EntrepriseNouvelleDemande: React.FC = () => {
   const { mockData } = useApiData();
   const navigate = useNavigate();
 
-  // Données mockées des conducteurs avec statut des cartes
-  const conducteurs = [
+  // Conducteurs avec cartes expirées ou manquantes seulement
+  const conducteursEligibles = [
     {
       id: '1',
       nom: 'ONDO',
       prenom: 'Jean-Baptiste',
       email: 'jb.ondo@gmail.com',
       telephone: '+241-01-23-45-67',
+      lieuNaissance: 'Libreville',
+      dateNaissance: '1985-03-15',
       carte: {
         numero: 'GAB-2023-001234',
-        dateExpiration: '2028-01-15',
-        statut: 'expire_bientot' // expire dans 2 mois
+        dateExpiration: '2024-02-15', // Expirée
+        statut: 'expire'
       }
     },
     {
@@ -51,19 +46,9 @@ const EntrepriseNouvelleDemande: React.FC = () => {
       prenom: 'Marie-Claire',
       email: 'mc.mbadinga@yahoo.fr',
       telephone: '+241-05-67-89-01',
+      lieuNaissance: 'Port-Gentil',
+      dateNaissance: '1990-08-22',
       carte: null // Pas de carte
-    },
-    {
-      id: '3',
-      nom: 'NZIGOU',
-      prenom: 'Paul-Henri',
-      email: 'ph.nzigou@gmail.com',
-      telephone: '+241-07-12-34-56',
-      carte: {
-        numero: 'GAB-2023-009012',
-        dateExpiration: '2028-06-20',
-        statut: 'valide'
-      }
     }
   ];
 
@@ -91,27 +76,39 @@ const EntrepriseNouvelleDemande: React.FC = () => {
 
   const getStatutCarte = (conducteur: any) => {
     if (!conducteur.carte) {
-      return <span className="text-red-600 font-medium">Aucune carte - Création nécessaire</span>;
+      return (
+        <div className="flex items-center gap-2 text-red-600">
+          <AlertCircle className="h-4 w-4" />
+          <span className="font-medium">Aucune carte - Création nécessaire</span>
+        </div>
+      );
     }
     
     const dateExpiration = new Date(conducteur.carte.dateExpiration);
     const maintenant = new Date();
-    const moisRestants = (dateExpiration.getTime() - maintenant.getTime()) / (1000 * 60 * 60 * 24 * 30);
     
-    if (moisRestants <= 2) {
-      return <span className="text-orange-600 font-medium">Expire bientôt - Renouvellement nécessaire</span>;
+    if (dateExpiration < maintenant) {
+      return (
+        <div className="flex items-center gap-2 text-red-600">
+          <AlertCircle className="h-4 w-4" />
+          <span className="font-medium">Carte expirée - Renouvellement nécessaire</span>
+        </div>
+      );
     }
     
-    return <span className="text-green-600 font-medium">Carte valide</span>;
+    return (
+      <div className="flex items-center gap-2 text-orange-600">
+        <AlertCircle className="h-4 w-4" />
+        <span className="font-medium">Expire bientôt - Renouvellement nécessaire</span>
+      </div>
+    );
   };
 
   const calculateTotal = () => {
-    const prixCarte = 25000; // Prix par carte en XAF
-    const prixChrono = 15000; // Prix par chronotachygraphe en XAF
-    
+    const prixCarte = 25000;
+    const prixChrono = 15000;
     const totalCartes = selectedConducteurs.length * prixCarte;
     const totalChrono = selectedVehicules.length * prixChrono;
-    
     return totalCartes + totalChrono;
   };
 
@@ -130,9 +127,8 @@ const EntrepriseNouvelleDemande: React.FC = () => {
       description: "Votre demande a été enregistrée avec succès. Redirection vers le paiement...",
     });
 
-    // Simulation de redirection vers l'agrégateur de paiement
     setTimeout(() => {
-      navigate('/entreprise/paiement');
+      navigate('/entreprise/demandes');
     }, 2000);
   };
 
@@ -144,11 +140,11 @@ const EntrepriseNouvelleDemande: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Sélection des conducteurs</h3>
               <p className="text-gray-600 mb-4">
-                Choisissez les conducteurs pour lesquels vous souhaitez faire une demande de carte
+                Conducteurs nécessitant une carte conducteur (carte expirée ou manquante)
               </p>
               
               <div className="space-y-4">
-                {conducteurs.map((conducteur) => (
+                {conducteursEligibles.map((conducteur) => (
                   <Card key={conducteur.id} className="p-4">
                     <div className="flex items-start space-x-3">
                       <Checkbox
@@ -164,6 +160,9 @@ const EntrepriseNouvelleDemande: React.FC = () => {
                             </Label>
                             <p className="text-sm text-gray-600">{conducteur.email}</p>
                             <p className="text-sm text-gray-600">{conducteur.telephone}</p>
+                            <p className="text-sm text-gray-600">
+                              Né le {new Date(conducteur.dateNaissance).toLocaleDateString('fr-FR')} à {conducteur.lieuNaissance}
+                            </p>
                           </div>
                           <div className="text-right">
                             <div className="mb-2">
@@ -172,7 +171,7 @@ const EntrepriseNouvelleDemande: React.FC = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => navigate(`/conducteurs/${conducteur.id}`)}
+                              onClick={() => navigate(`/chauffeurs/${conducteur.id}`)}
                             >
                               <Eye className="h-3 w-3 mr-1" />
                               Détails
@@ -180,9 +179,9 @@ const EntrepriseNouvelleDemande: React.FC = () => {
                           </div>
                         </div>
                         {conducteur.carte && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
-                            <p><strong>Carte actuelle:</strong> {conducteur.carte.numero}</p>
-                            <p><strong>Expire le:</strong> {new Date(conducteur.carte.dateExpiration).toLocaleDateString('fr-FR')}</p>
+                          <div className="mt-2 p-2 bg-red-50 rounded text-sm">
+                            <p><strong>Carte expirée:</strong> {conducteur.carte.numero}</p>
+                            <p><strong>Expirée le:</strong> {new Date(conducteur.carte.dateExpiration).toLocaleDateString('fr-FR')}</p>
                           </div>
                         )}
                       </div>
@@ -235,11 +234,6 @@ const EntrepriseNouvelleDemande: React.FC = () => {
                             </Button>
                           </div>
                         </div>
-                        {vehicule.chronoSerial && (
-                          <div className="mt-2 p-2 bg-green-50 rounded text-sm">
-                            <p><strong>Chronotachygraphe:</strong> {vehicule.chronoSerial}</p>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </Card>
@@ -266,7 +260,7 @@ const EntrepriseNouvelleDemande: React.FC = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {selectedConducteurs.map(id => {
-                      const conducteur = conducteurs.find(c => c.id === id);
+                      const conducteur = conducteursEligibles.find(c => c.id === id);
                       return (
                         <div key={id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                           <div>
@@ -316,7 +310,7 @@ const EntrepriseNouvelleDemande: React.FC = () => {
               </Card>
             )}
 
-            {/* Facture */}
+            {/* Facture et CGU */}
             <Card>
               <CardHeader>
                 <CardTitle>Facture</CardTitle>
@@ -345,7 +339,6 @@ const EntrepriseNouvelleDemande: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Conditions générales */}
             <Card>
               <CardHeader>
                 <CardTitle>Conditions générales d'utilisation</CardTitle>

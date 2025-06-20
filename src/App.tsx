@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +24,7 @@ import EntrepriseMandataires from "./pages/EntrepriseMandataires";
 import EntrepriseEntreprises from "./pages/EntrepriseEntreprises";
 import EntrepriseDocuments from "./pages/EntrepriseDocuments";
 import EntrepriseNouvelleDemande from "./pages/EntrepriseNouvelleDemande";
+import EntrepriseDemandes from "./pages/EntrepriseDemandes";
 
 // Pages communes
 import Cartes from "./pages/Cartes";
@@ -104,7 +106,7 @@ const App = () => (
           
           <Route path="/entreprise/demandes" element={
             <ProtectedRoute allowedUserTypes={['entreprise']}>
-              <Cartes />
+              <EntrepriseDemandes />
             </ProtectedRoute>
           } />
           
