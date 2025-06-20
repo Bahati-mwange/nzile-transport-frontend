@@ -21,7 +21,7 @@ interface Notification {
 const Notifications: React.FC = () => {
   const { currentUser, isInitialized } = useApiData();
   const [filter, setFilter] = useState('all');
-  
+
   const mockNotifications: Notification[] = [
     {
       id: '1',
@@ -71,7 +71,7 @@ const Notifications: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <LoadingSpinner size="lg" text="Chargement des notifications..." />
       </div>
     );
@@ -141,7 +141,7 @@ const Notifications: React.FC = () => {
               Restez informé de l'évolution de vos demandes et des actualités
             </p>
           </div>
-          
+
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
               Marquer tout comme lu
@@ -185,7 +185,7 @@ const Notifications: React.FC = () => {
                     <div className="mt-1">
                       {getNotificationIcon(notification.type)}
                     </div>
-                    
+
                     <div className="flex-1 space-y-2">
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
@@ -210,7 +210,7 @@ const Notifications: React.FC = () => {
                             {getNotificationBadge(notification.type)}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Button variant="ghost" size="sm">
                             {notification.isRead ? (
@@ -224,7 +224,7 @@ const Notifications: React.FC = () => {
                           </Button>
                         </div>
                       </div>
-                      
+
                       {notification.actions && (
                         <div className="flex gap-2 pt-2">
                           {notification.actions.map((action, index) => (
@@ -244,11 +244,11 @@ const Notifications: React.FC = () => {
               <CardContent className="text-center py-12">
                 <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-muted-foreground">
-                  {filter === 'unread' 
-                    ? "Aucune notification non lue" 
+                  {filter === 'unread'
+                    ? "Aucune notification non lue"
                     : filter === 'all'
-                    ? "Aucune notification"
-                    : "Aucune notification dans cette catégorie"}
+                      ? "Aucune notification"
+                      : "Aucune notification dans cette catégorie"}
                 </p>
               </CardContent>
             </Card>

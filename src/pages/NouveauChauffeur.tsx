@@ -1,11 +1,9 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import PageLayout from '@/components/PageLayout';
-import PieceIdentiteInput from '@/components/PieceIdentiteInput';
 import ConditionsGenerales from '@/components/ConditionsGenerales';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +16,6 @@ import { Upload } from 'lucide-react';
 const chauffeurSchema = z.object({
   nom: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
   prenom: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
-  typePiece: z.string().min(1, 'Le type de pièce est requis'),
   numeroPiece: z.string().min(5, 'Le numéro de pièce est requis'),
   permis: z.string().min(5, 'Le numéro de permis est requis'),
   telephone: z.string().min(10, 'Le numéro de téléphone est requis'),
@@ -36,10 +33,9 @@ const NouveauChauffeur: React.FC = () => {
   const { toast } = useToast();
   const [aCarteConducteur, setACarteConducteur] = useState(false);
   const [numeroCarte, setNumeroCarte] = useState('');
-  const [typePiece, setTypePiece] = useState('');
   const [numeroPiece, setNumeroPiece] = useState('');
   const [accepteConditions, setAccepteConditions] = useState(false);
-  
+
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ChauffeurFormData>({
     resolver: zodResolver(chauffeurSchema)
   });
@@ -56,12 +52,12 @@ const NouveauChauffeur: React.FC = () => {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       toast({
         title: "Conducteur ajouté",
         description: "Le conducteur a été ajouté avec succès"
       });
-      
+
       navigate('/chauffeurs');
     } catch (error) {
       toast({
@@ -106,20 +102,24 @@ const NouveauChauffeur: React.FC = () => {
               </div>
             </div>
 
-            {/* Pièce d'identité */}
-            <PieceIdentiteInput
-              typePiece={typePiece}
-              onTypePieceChange={(type) => {
-                setTypePiece(type);
-                setValue('typePiece', type);
-              }}
-              numeroPiece={numeroPiece}
-              onNumeroPieceChange={(numero) => {
-                setNumeroPiece(numero);
-                setValue('numeroPiece', numero);
-              }}
-              error={errors.numeroPiece?.message}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="numero-piece">
+                Numéro de pièce d'identité
+                <span className="text-xs text-gray-500"> (CNI, Passeport, Carte de séjour, Permis de conduire)</span> *
+              </Label>
+              <Input
+                id="numero-piece"
+                value={numeroPiece}
+                onChange={(e) => {
+                  setNumeroPiece(e.target.value);
+                  setValue('numeroPiece', e.target.value);
+                }}
+                placeholder="Numéro de la pièce"
+              />
+              {errors.numeroPiece && (
+                <p className="text-sm text-red-600">{errors.numeroPiece.message}</p>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -240,7 +240,7 @@ const NouveauChauffeur: React.FC = () => {
                         placeholder="GAB-2023-001234"
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label>Fichier de la carte conducteur (recto-verso)</Label>
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
@@ -257,7 +257,7 @@ const NouveauChauffeur: React.FC = () => {
                     <p className="text-sm text-gray-600">
                       Documents justificatifs requis pour la demande de carte conducteur :
                     </p>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Photo d'identité</Label>
@@ -266,7 +266,7 @@ const NouveauChauffeur: React.FC = () => {
                           <p className="text-xs text-gray-600">Photo récente</p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label>Copie pièce d'identité</Label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -274,7 +274,7 @@ const NouveauChauffeur: React.FC = () => {
                           <p className="text-xs text-gray-600">Recto-verso</p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label>Copie permis de conduire</Label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -282,7 +282,7 @@ const NouveauChauffeur: React.FC = () => {
                           <p className="text-xs text-gray-600">Recto-verso</p>
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label>Certificat médical</Label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -306,9 +306,9 @@ const NouveauChauffeur: React.FC = () => {
               <Button type="submit" className="flex-1">
                 Ajouter le conducteur
               </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => navigate('/chauffeurs')}
                 className="flex-1"
               >

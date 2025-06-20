@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 // Types pour notre système de transport
@@ -76,6 +75,7 @@ export interface TachographSession {
 }
 
 export interface User {
+  driverCard: any;
   id: string;
   email: string;
   password: string;
@@ -125,6 +125,62 @@ const mockDrivers: Driver[] = [
     lieuNaissance: 'Port-Gentil',
     dateNaissance: '1988-12-05',
     entrepriseId: '2'
+  },
+  {
+    id: '4',
+    nom: 'MBOUMBA',
+    prenom: 'Pierre',
+    cni: '176789012',
+    permis: 'GA-2023-002345',
+    telephone: '+241-06-11-22-33',
+    email: 'pierre.mboumba@exemple.ga',
+    adresse: 'Akanda, Libreville',
+    ville: 'Libreville',
+    lieuNaissance: 'Oyem',
+    dateNaissance: '1992-04-10',
+    entrepriseId: '1'
+  },
+  {
+    id: '5',
+    nom: 'ESSONO',
+    prenom: 'Sylvie',
+    cni: '177890123',
+    permis: 'GA-2023-003456',
+    telephone: '+241-07-22-33-44',
+    email: 'sylvie.essono@exemple.ga',
+    adresse: 'Nzeng Ayong, Libreville',
+    ville: 'Libreville',
+    lieuNaissance: 'Franceville',
+    dateNaissance: '1995-09-18',
+    entrepriseId: '1'
+  },
+  {
+    id: '6',
+    nom: 'BONGO',
+    prenom: 'Alain',
+    cni: '178901234',
+    permis: 'GA-2023-004567',
+    telephone: '+241-01-55-66-77',
+    email: 'alain.bongo@exemple.ga',
+    adresse: 'Owendo, Libreville',
+    ville: 'Libreville',
+    lieuNaissance: 'Lambaréné',
+    dateNaissance: '1987-11-23',
+    entrepriseId: '1'
+  },
+  {
+    id: '7',
+    nom: 'MVE',
+    prenom: 'Chantal',
+    cni: '179012345',
+    permis: 'GA-2023-005678',
+    telephone: '+241-02-88-99-00',
+    email: 'chantal.mve@exemple.ga',
+    adresse: 'Glass, Libreville',
+    ville: 'Libreville',
+    lieuNaissance: 'Mouila',
+    dateNaissance: '1993-02-14',
+    entrepriseId: '1'
   }
 ];
 
@@ -228,6 +284,66 @@ const mockDriverCards: DriverCard[] = [
     documents: ['permis.pdf', 'cni.pdf'],
     typeVehicule: 'Poids lourd',
     autoriteEmission: 'Direction Générale des Transports - Gabon'
+  },
+  {
+    id: '4',
+    driverId: '2', // correspond à Marie-Claire MBADINGA (particulier)
+    numero: 'GAB-2024-007777',
+    dateEmission: '2024-06-01',
+    dateExpiration: '2029-06-01',
+    statut: 'validee',
+    type: 'conducteur',
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Véhicule léger',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
+  },
+  {
+    id: '5',
+    driverId: '4',
+    numero: 'GAB-2024-010001',
+    dateEmission: '2024-01-10',
+    dateExpiration: '2029-01-10',
+    statut: 'validee',
+    type: 'conducteur',
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Poids lourd',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
+  },
+  {
+    id: '6',
+    driverId: '5',
+    numero: 'GAB-2024-010002',
+    dateEmission: '2024-02-15',
+    dateExpiration: '2029-02-15',
+    statut: 'validee',
+    type: 'conducteur',
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Véhicule léger',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
+  },
+  {
+    id: '7',
+    driverId: '6',
+    numero: 'GAB-2024-010003',
+    dateEmission: '2024-03-20',
+    dateExpiration: '2029-03-20',
+    statut: 'en_attente',
+    type: 'conducteur',
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Poids lourd',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
+  },
+  {
+    id: '8',
+    driverId: '7',
+    numero: 'GAB-2024-010004',
+    dateEmission: '2024-04-25',
+    dateExpiration: '2029-04-25',
+    statut: 'validee',
+    type: 'conducteur',
+    documents: ['permis.pdf', 'cni.pdf'],
+    typeVehicule: 'Véhicule léger',
+    autoriteEmission: 'Direction Générale des Transports - Gabon'
   }
 ];
 
@@ -237,22 +353,24 @@ const mockUsers: User[] = [
     email: 'admin@transport-gabon.ga',
     password: 'password123',
     type: 'entreprise',
-    profile: mockCompanies[0]
+    profile: mockCompanies[0],
+    driverCard: null
   },
   {
     id: '2',
     email: 'mc.mbadinga@yahoo.fr',
     password: 'password123',
     type: 'particulier',
-    profile: mockDrivers[1]
+    profile: mockDrivers[1],
+    driverCard: mockDriverCards.find(card => card.driverId === '2') || null
   }
 ];
 
 // Import des données mockées depuis le fichier séparé
-import { 
-  mockSessions, 
-  mockDashboardStats, 
-  mockChartData, 
+import {
+  mockSessions,
+  mockDashboardStats,
+  mockChartData,
   mockAlertes,
   mockVehiculeDetails,
   mockChronoData,
@@ -280,19 +398,19 @@ export const useApiData = () => {
   const login = async (email: string, password: string): Promise<User | null> => {
     console.log('Tentative de connexion:', { email, password });
     setIsLoading(true);
-    
+
     // Simulation d'un délai d'API
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
+
     const user = mockUsers.find(u => u.email === email && u.password === password);
     console.log('Utilisateur trouvé:', user);
-    
+
     if (user) {
       setCurrentUser(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
       console.log('Connexion réussie, utilisateur sauvegardé:', user);
     }
-    
+
     setIsLoading(false);
     return user || null;
   };
@@ -379,7 +497,7 @@ export const useApiData = () => {
     const loadUserFromStorage = () => {
       const savedUser = localStorage.getItem('currentUser');
       console.log('Vérification localStorage au démarrage:', savedUser ? 'Utilisateur trouvé' : 'Aucun utilisateur');
-      
+
       if (savedUser) {
         try {
           const parsedUser = JSON.parse(savedUser);

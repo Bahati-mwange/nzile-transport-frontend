@@ -14,12 +14,12 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { 
-  Home, 
-  CreditCard, 
-  Users, 
-  Truck, 
-  Clock, 
+import {
+  Home,
+  CreditCard,
+  Users,
+  Truck,
+  Clock,
   User,
   Settings,
   LogOut,
@@ -60,9 +60,9 @@ const AppSidebar: React.FC = () => {
     { title: "Demandes", url: "/entreprise/demandes", icon: FileText },
     { title: "Conducteurs", url: "/chauffeurs", icon: Users },
     { title: "Véhicules", url: "/vehicules", icon: Truck },
-    { title: "Cartes", url: "/cartes", icon: CreditCard },
+    { title: "Cartes", url: "/entreprise/cartes", icon: CreditCard },
     { title: "Sessions", url: "/sessions", icon: Clock },
-    { title: "Données Chrono", url: "/chrono-data", icon: Database },
+    { title: "Données Chrono", url: "/entreprise/chrono-data", icon: Database },
     { title: "Documents", url: "/entreprise/documents", icon: FileText },
     { title: "Notifications", url: "/entreprise/notifications", icon: Bell },
     { title: "Profil entreprise", url: "/entreprise/profil", icon: Building2 },
@@ -173,8 +173,8 @@ const AppSidebar: React.FC = () => {
         <div className="space-y-3">
           <div className="text-sm">
             <p className="font-medium truncate">
-              {isEntreprise 
-                ? (currentUser.profile as any).denomination 
+              {isEntreprise
+                ? (currentUser.profile as any).denomination
                 : `${(currentUser.profile as any).prenom} ${(currentUser.profile as any).nom}`
               }
             </p>

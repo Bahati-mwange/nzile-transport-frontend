@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -17,15 +16,15 @@ const EntrepriseSessions: React.FC = () => {
 
   useEffect(() => {
     loadSessions();
+    // eslint-disable-next-line
   }, []);
 
-  const loadSessions = async () => {
+  function loadSessions() {
     const data = getSessions();
-    // Pour les entreprises, afficher toutes les sessions de leurs conducteurs
     setSessions(data);
-  };
+  }
 
-  const filteredSessions = sessions.filter(session => 
+  const filteredSessions = sessions.filter(session =>
     session.trajetDepart.toLowerCase().includes(searchTerm.toLowerCase()) ||
     session.trajetArrivee.toLowerCase().includes(searchTerm.toLowerCase()) ||
     session.driverId.includes(searchTerm) ||
@@ -75,13 +74,28 @@ const EntrepriseSessions: React.FC = () => {
                         <MapPin className="h-4 w-4" />
                         {session.trajetDepart} → {session.trajetArrivee}
                       </CardTitle>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1 flex-wrap">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           {new Date(session.dateDebut).toLocaleDateString('fr-FR')}
                         </span>
                         <span>{formatDuration(session.dureeConduite)} de conduite</span>
                         <span>{session.distanceParcourue} km</span>
+                        <span className="flex items-center gap-1">
+                          <Badge variant={session.conducteurs?.secondaire ? 'default' : 'outline'}>
+                            {session.conducteurs?.secondaire ? 'Partage' : 'Solo'}
+                          </Badge>
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Badge variant={session.statut === 'anomalie' ? 'destructive' : 'outline'}>
+                            {session.statut === 'anomalie' ? 'Anomalie' : 'Valide'}
+                          </Badge>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 flex-wrap">
+                        <span>Véhicule : <span className="font-medium text-gray-700">{session.vehicleName}</span></span>
+                        <span>Immat : <span className="font-mono">{session.vehicleId}</span></span>
+                        <span>Carte : <span className="font-mono">{session.carteId}</span></span>
                       </div>
                       {/* Affichage des conducteurs */}
                       <div className="flex items-center gap-2 mt-2">
@@ -103,7 +117,7 @@ const EntrepriseSessions: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-col items-end">
                     {session.infractions.length > 0 && (
                       <Badge variant="destructive">
                         <AlertCircle className="h-3 w-3 mr-1" />
@@ -158,9 +172,9 @@ const EntrepriseSessions: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex gap-2 pt-4">
+                <div className="flex gap-2 pt-4 flex-wrap">
                   <Button variant="outline" size="sm" asChild>
-                    <Link to={`/sessions/${session.id}`}>
+                    <Link to={`/entreprise/sessions/${session.id}`}>
                       <Eye className="h-3 w-3 mr-1" />
                       Voir détails
                     </Link>
@@ -170,6 +184,9 @@ const EntrepriseSessions: React.FC = () => {
                   </Button>
                   <Button variant="outline" size="sm">
                     Voir trajet
+                  </Button>
+                  <Button variant="secondary" size="sm">
+                    Chrono détaillé
                   </Button>
                 </div>
               </CardContent>

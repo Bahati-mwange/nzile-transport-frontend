@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import PageLayout from '@/components/PageLayout';
 import ChronoDataTable from '@/components/ChronoDataTable';
@@ -9,8 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useApiData } from '@/hooks/useApiData';
 import { Download, Upload, Users, Car, Clock, TrendingUp, AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const EntrepriseChronoData: React.FC = () => {
+  const navigate = useNavigate();
   const { getDrivers, getChronoSessionData, currentUser } = useApiData();
   const [selectedDriver, setSelectedDriver] = useState<string>('all');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('today');
@@ -23,7 +24,7 @@ const EntrepriseChronoData: React.FC = () => {
     const matchesDriver = selectedDriver === 'all' || session.driverId === selectedDriver;
     const sessionDate = new Date(session.date);
     const today = new Date();
-    
+
     let matchesPeriod = true;
     if (selectedPeriod === 'today') {
       matchesPeriod = sessionDate.toDateString() === today.toDateString();
@@ -36,16 +37,28 @@ const EntrepriseChronoData: React.FC = () => {
       monthAgo.setMonth(today.getMonth() - 1);
       matchesPeriod = sessionDate >= monthAgo;
     }
-    
+
     return matchesDriver && matchesPeriod;
   });
 
-  // Calculer les statistiques
+  // Calculer les statistiques (éviter la double déclaration)
   const totalSessions = filteredChronoData.length;
   const sessionsEnSolo = filteredChronoData.filter(s => s.typeConduite === 'solo').length;
-  const sessionsPartagees = filteredChronoData.filter(s => s.typeConduite === 'partage').length;
+  const sessionsPartageesCount = filteredChronoData.filter(s => s.typeConduite === 'partage').length;
   const tempsConduiteTotal = filteredChronoData.reduce((acc, s) => acc + s.tempsConduite, 0);
   const distanceTotal = filteredChronoData.reduce((acc, s) => acc + s.distance, 0);
+
+  const vehicles = [
+    { id: '1', nom: 'Mercedes-Benz Actros 1845', immatriculation: 'GA-3456-LV' },
+    { id: '2', nom: 'Volvo FH16', immatriculation: 'GA-7890-PG' },
+    { id: '3', nom: 'Toyota Hiace', immatriculation: 'GA-1234-LV' },
+  ];
+  const driverCards = [
+    { id: '1', driverId: '1', numero: 'GAB-2023-001234' },
+    { id: '2', driverId: '2', numero: 'GAB-2023-005678' },
+    { id: '3', driverId: '3', numero: 'GAB-2023-009012' },
+    { id: '4', driverId: '2', numero: 'GAB-2024-007777' },
+  ];
 
   const getDriverName = (driverId: string) => {
     const driver = drivers.find(d => d.id === driverId);
@@ -61,6 +74,15 @@ const EntrepriseChronoData: React.FC = () => {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const getVehicleName = (vehicleId: string) => {
+    const v = vehicles.find(v => v.id === vehicleId);
+    return v ? `${v.nom} (${v.immatriculation})` : vehicleId;
+  };
+  const getCardNumber = (driverId: string) => {
+    const c = driverCards.find(c => c.driverId === driverId);
+    return c ? c.numero : '—';
   };
 
   const actionButtons = (
@@ -151,7 +173,7 @@ const EntrepriseChronoData: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Conduite partagée</p>
-                  <p className="text-2xl font-bold text-orange-600">{sessionsPartagees}</p>
+                  <p className="text-2xl font-bold text-orange-600">{sessionsPartageesCount}</p>
                 </div>
                 <Users className="h-8 w-8 text-orange-600" />
               </div>
@@ -200,6 +222,7 @@ const EntrepriseChronoData: React.FC = () => {
                       <TableHead>Date</TableHead>
                       <TableHead>Conducteur</TableHead>
                       <TableHead>Véhicule</TableHead>
+                      <TableHead>Carte</TableHead>
                       <TableHead>Type conduite</TableHead>
                       <TableHead>Temps conduite</TableHead>
                       <TableHead>Distance</TableHead>
@@ -217,11 +240,15 @@ const EntrepriseChronoData: React.FC = () => {
                         <TableCell className="font-medium">
                           {getDriverName(session.driverId)}
                         </TableCell>
-                        <TableCell>{session.vehicleId}</TableCell>
+                        <TableCell>{getVehicleName(session.vehicleId)}</TableCell>
+                        <TableCell>{getCardNumber(session.driverId)}</TableCell>
                         <TableCell>
                           <Badge className={getTypeConduiteColor(session.typeConduite)}>
                             {session.typeConduite === 'solo' ? 'Solo' : 'Partagée'}
                           </Badge>
+                          {session.statut === 'anomalie' && (
+                            <Badge variant="destructive" className="ml-2">Alerte</Badge>
+                          )}
                         </TableCell>
                         <TableCell>{session.tempsConduite}h</TableCell>
                         <TableCell>{session.distance} km</TableCell>
@@ -237,12 +264,17 @@ const EntrepriseChronoData: React.FC = () => {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge 
+                          <Badge
                             variant={session.statut === 'valide' ? 'default' : 'destructive'}
                             className={session.statut === 'valide' ? 'bg-green-100 text-green-800' : ''}
                           >
                             {session.statut === 'valide' ? 'Valide' : 'Anomalie'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button size="sm" variant="outline" onClick={() => navigate(`/sessions/${session.id}`)}>
+                            Voir détail
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -264,17 +296,21 @@ const EntrepriseChronoData: React.FC = () => {
         </Card>
 
         {/* Tableau chronotachygraphe existant */}
-        <Card>
+        {/* <Card>
           <CardHeader>
             <CardTitle>Données chronotachygraphe détaillées</CardTitle>
           </CardHeader>
           <CardContent>
             <ChronoDataTable />
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </PageLayout>
   );
 };
 
 export default EntrepriseChronoData;
+
+// Les données chronotachygraphe sont déjà filtrées par conducteur et type de conduite (solo/partagée)
+// On s'assure que l'affichage est bien par conducteur, en solo ou en conduite partagée
+// Rien à modifier, mais commentaire ajouté pour la clarté

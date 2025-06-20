@@ -1,6 +1,8 @@
 import type { Vehicle } from '@/hooks/useApiData';
 
 export interface Session {
+  statut: string;
+  statut: string;
   id: string;
   driverId: string;
   driverName: string;
@@ -115,7 +117,8 @@ export const mockSessions: Session[] = [
     conducteurs: {
       principal: 'Jean-Baptiste ONDO',
       secondaire: 'Paul-Henri NZIGOU'
-    }
+    },
+    statut: ''
   },
   {
     id: '2',
@@ -136,7 +139,8 @@ export const mockSessions: Session[] = [
     trajetArrivee: 'Akanda',
     conducteurs: {
       principal: 'Marie-Claire MBADINGA'
-    }
+    },
+    statut: ''
   },
   {
     id: '3',
@@ -157,7 +161,8 @@ export const mockSessions: Session[] = [
     trajetArrivee: 'Franceville',
     conducteurs: {
       principal: 'Paul-Henri NZIGOU'
-    }
+    },
+    statut: ''
   },
   {
     id: '4',
@@ -179,7 +184,68 @@ export const mockSessions: Session[] = [
     conducteurs: {
       principal: 'Jean-Baptiste ONDO',
       secondaire: 'Marie-Claire MBADINGA'
-    }
+    },
+    statut: ''
+  },
+  {
+    id: '100',
+    driverId: '1',
+    driverName: 'Jean-Baptiste ONDO',
+    vehicleId: '1',
+    vehicleName: 'Mercedes-Benz Actros',
+    carteId: '1',
+    dateDebut: '2025-06-20T08:00:00Z',
+    dateFin: '2025-06-20T16:00:00Z',
+    dureeConduite: 480,
+    dureeRepos: 60,
+    distanceParcourue: 410,
+    vitesseMoyenne: 67,
+    vitesseMax: 90,
+    infractions: [],
+    trajetDepart: 'Libreville',
+    trajetArrivee: 'Lambaréné',
+    statut: 'validee',
+    conducteurs: { principal: 'Jean-Baptiste ONDO' }
+  },
+  {
+    id: '101',
+    driverId: '2',
+    driverName: 'Marie-Claire MBADINGA',
+    vehicleId: '3',
+    vehicleName: 'Toyota Hiace',
+    carteId: '2',
+    dateDebut: '2025-06-20T09:00:00Z',
+    dateFin: '2025-06-20T15:00:00Z',
+    dureeConduite: 360,
+    dureeRepos: 30,
+    distanceParcourue: 390,
+    vitesseMoyenne: 62,
+    vitesseMax: 80,
+    infractions: ['Excès de vitesse'],
+    trajetDepart: 'Akanda',
+    trajetArrivee: 'Libreville',
+    statut: 'expiree',
+    conducteurs: { principal: 'Marie-Claire MBADINGA', secondaire: 'Paul-Henri NZIGOU' }
+  },
+  {
+    id: '102',
+    driverId: '3',
+    driverName: 'Paul-Henri NZIGOU',
+    vehicleId: '2',
+    vehicleName: 'Volvo FH16',
+    carteId: '3',
+    dateDebut: '2025-06-20T07:30:00Z',
+    dateFin: '2025-06-20T13:30:00Z',
+    dureeConduite: 360,
+    dureeRepos: 45,
+    distanceParcourue: 320,
+    vitesseMoyenne: 58,
+    vitesseMax: 75,
+    infractions: [],
+    trajetDepart: 'Franceville',
+    trajetArrivee: 'Mouila',
+    statut: 'validee',
+    conducteurs: { principal: 'Paul-Henri NZIGOU' }
   }
 ];
 
@@ -686,6 +752,67 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
     tempsConduite: 8.5,
     distance: 620,
     vitesseMoyenne: 73,
+    infractions: 0,
+    statut: 'valide'
+  },
+  // Sessions du jour pour affichage immédiat
+  {
+    id: '100',
+    date: '2025-06-20',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'solo',
+    tempsConduite: 7.5,
+    distance: 410,
+    vitesseMoyenne: 67,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '101',
+    date: '2025-06-20',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'partage',
+    tempsConduite: 8,
+    distance: 390,
+    vitesseMoyenne: 62,
+    infractions: 1,
+    statut: 'anomalie'
+  },
+  {
+    id: '102',
+    date: '2025-06-20',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'solo',
+    tempsConduite: 6,
+    distance: 320,
+    vitesseMoyenne: 58,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '103',
+    date: '2025-06-20',
+    driverId: '1',
+    vehicleId: '2',
+    typeConduite: 'partage',
+    tempsConduite: 9,
+    distance: 500,
+    vitesseMoyenne: 70,
+    infractions: 2,
+    statut: 'anomalie'
+  },
+  {
+    id: '104',
+    date: '2025-06-20',
+    driverId: '2',
+    vehicleId: '1',
+    typeConduite: 'solo',
+    tempsConduite: 5.5,
+    distance: 260,
+    vitesseMoyenne: 55,
     infractions: 0,
     statut: 'valide'
   }

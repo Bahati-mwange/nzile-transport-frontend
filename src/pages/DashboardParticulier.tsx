@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -8,10 +7,10 @@ import SessionChart from '@/components/SessionChart';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  CreditCard, 
-  Clock, 
-  AlertTriangle, 
+import {
+  CreditCard,
+  Clock,
+  AlertTriangle,
   Car,
   TrendingUp,
   Calendar,
@@ -27,7 +26,7 @@ const DashboardParticulier: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <LoadingSpinner size="lg" text="Chargement du tableau de bord..." />
       </div>
     );
@@ -78,7 +77,7 @@ const DashboardParticulier: React.FC = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button 
+                <Button
                   variant="secondary"
                   onClick={() => navigate('/mes-demandes/nouvelle')}
                   className="bg-white text-blue-700 hover:bg-gray-100"
@@ -101,7 +100,7 @@ const DashboardParticulier: React.FC = () => {
             iconColor="text-blue-600"
             trend={{ value: 12.5, isPositive: true }}
           />
-          
+
           <DashboardCard
             title="Temps de repos"
             value={`${stats.tempsRepos}h`}
@@ -110,7 +109,7 @@ const DashboardParticulier: React.FC = () => {
             iconColor="text-green-600"
             trend={{ value: 8.2, isPositive: true }}
           />
-          
+
           <DashboardCard
             title="Infractions"
             value={stats.infractions}
@@ -119,7 +118,7 @@ const DashboardParticulier: React.FC = () => {
             iconColor="text-red-600"
             onClick={() => navigate('/sessions')}
           />
-          
+
           <DashboardCard
             title="Sessions"
             value={stats.sessionsCount}
@@ -195,26 +194,26 @@ const DashboardParticulier: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/mes-demandes/nouvelle')}
               >
                 <Plus className="h-6 w-6" />
                 <span>Nouvelle demande</span>
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/sessions')}
               >
                 <TrendingUp className="h-6 w-6" />
                 <span>Mes sessions</span>
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/profil')}
               >

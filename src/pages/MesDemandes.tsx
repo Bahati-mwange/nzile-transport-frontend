@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useApiData } from '@/hooks/useApiData';
 import PageLayout from '@/components/PageLayout';
@@ -37,7 +36,7 @@ const MesDemandes: React.FC = () => {
   }
 
   const userDriverCards = mockData.driverCards.filter(c => c.driverId === currentUser.id);
-  
+
   const filteredCards = userDriverCards.filter(carte => {
     const matchesSearch = carte.numero.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || carte.statut === statusFilter;
@@ -84,7 +83,7 @@ const MesDemandes: React.FC = () => {
     const dateEmission = new Date(carte.dateEmission);
     const dateExpiration = new Date(carte.dateExpiration);
     const now = new Date();
-    
+
     switch (carte.statut) {
       case 'validee':
         return {

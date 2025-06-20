@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -19,19 +18,19 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     console.log('Soumission du formulaire de connexion');
-    
+
     try {
       const user = await login(email, password);
       console.log('Résultat de login:', user);
-      
+
       if (user) {
         toast({
           title: "Connexion réussie",
           description: "Bienvenue sur transport.nzile.ga"
         });
-        
+
         // Navigation basée sur le type d'utilisateur
         const targetPath = user.type === 'entreprise' ? '/entreprise' : '/mon-espace';
         console.log('Navigation vers:', targetPath);
@@ -74,8 +73,8 @@ const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50 p-4">
-      <Card className="w-full max-w-md animate-fade-in">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-green-50 p-4">
+      <Card className="w-full max-w-md mx-auto animate-fade-in shadow-lg">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Truck className="h-12 w-12 text-transport-primary" />
@@ -104,7 +103,7 @@ const Login: React.FC = () => {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="password">Mot de passe</Label>
               <div className="relative">

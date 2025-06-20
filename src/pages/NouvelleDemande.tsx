@@ -42,11 +42,19 @@ const NouvelleDemande: React.FC = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Pour un particulier, le type de demande est fixé à carte conducteur
+  React.useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      type: 'carte_conducteur'
+    }));
+  }, []);
+
+  // Étapes : 1 = Informations personnelles, 2 = Justificatifs, 3 = Validation
   const steps = [
-    { id: 1, title: 'Type de demande', icon: CreditCard },
-    { id: 2, title: 'Informations personnelles', icon: User },
-    { id: 3, title: 'Justificatifs', icon: FileText },
-    { id: 4, title: 'Validation', icon: CheckCircle }
+    { id: 1, title: 'Informations personnelles', icon: User },
+    { id: 2, title: 'Justificatifs', icon: FileText },
+    { id: 3, title: 'Validation', icon: CheckCircle }
   ];
 
   const piecesIdentite = [
@@ -73,12 +81,12 @@ const NouvelleDemande: React.FC = () => {
     try {
       // Simulation de soumission
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       toast({
         title: "Demande envoyée",
         description: "Votre demande a été enregistrée avec succès. Vous recevrez un email de confirmation."
       });
-      
+
       navigate('/mes-demandes');
     } catch (error) {
       toast({
@@ -105,62 +113,9 @@ const NouvelleDemande: React.FC = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quel type de demande souhaitez-vous faire ?</h3>
-              <RadioGroup value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
-                <div className="space-y-4">
-                  <Card className="p-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="carte_conducteur" id="carte_conducteur" />
-                      <Label htmlFor="carte_conducteur" className="flex-1 cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <CreditCard className="h-5 w-5 text-blue-600" />
-                          <div>
-                            <div className="font-medium">Carte conducteur</div>
-                            <div className="text-sm text-muted-foreground">Première demande ou renouvellement</div>
-                          </div>
-                        </div>
-                      </Label>
-                    </div>
-                  </Card>
-                  
-                  <Card className="p-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-center space-x-3">
-                      <RadioGroupItem value="carte_chronotachygraphe" id="carte_chronotachygraphe" />
-                      <Label htmlFor="carte_chronotachygraphe" className="flex-1 cursor-pointer">
-                        <div className="flex items-center gap-3">
-                          <Clock className="h-5 w-5 text-green-600" />
-                          <div>
-                            <div className="font-medium">Carte chronotachygraphe</div>
-                            <div className="text-sm text-muted-foreground">Pour véhicules équipés</div>
-                          </div>
-                        </div>
-                      </Label>
-                    </div>
-                  </Card>
-                </div>
-              </RadioGroup>
-            </div>
-            
-            <div>
-              <Label htmlFor="motif">Motif de la demande</Label>
-              <Textarea
-                id="motif"
-                placeholder="Précisez le motif de votre demande..."
-                value={formData.motif}
-                onChange={(e) => setFormData(prev => ({ ...prev, motif: e.target.value }))}
-                className="mt-1"
-              />
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4">Informations personnelles</h3>
-            
+
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="nom">Nom</Label>
@@ -205,26 +160,11 @@ const NouvelleDemande: React.FC = () => {
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="pieceIdentite">Type de pièce d'identité</Label>
-                <Select 
-                  value={formData.informationsPersonnelles.pieceIdentite} 
-                  onValueChange={(value) => updateFormData('informationsPersonnelles', 'pieceIdentite', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une pièce d'identité" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {piecesIdentite.map((piece) => (
-                      <SelectItem key={piece.value} value={piece.value}>
-                        {piece.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="numeroPiece">Numéro de pièce d'identité</Label>
+              <div className="col-span-2">
+                <Label htmlFor="numeroPiece">
+                  Numéro de pièce d'identité
+                  <span className="text-xs text-gray-500"> (CNI, Passeport, Carte de séjour, Permis de conduire)</span>
+                </Label>
                 <Input
                   id="numeroPiece"
                   value={formData.informationsPersonnelles.numeroPiece}
@@ -268,11 +208,11 @@ const NouvelleDemande: React.FC = () => {
           </div>
         );
 
-      case 3:
+      case 2:
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold mb-4">Justificatifs requis</h3>
-            
+
             <div className="space-y-4">
               <Card className="p-4">
                 <div className="flex items-center justify-between">
@@ -343,11 +283,11 @@ const NouvelleDemande: React.FC = () => {
           </div>
         );
 
-      case 4:
+      case 3:
         return (
           <div className="space-y-6">
             <h3 className="text-lg font-semibold mb-4">Validation de votre demande</h3>
-            
+
             <Card className="p-4 bg-blue-50 border-blue-200">
               <h4 className="font-medium mb-2">Récapitulatif de votre demande</h4>
               <div className="space-y-2 text-sm">
@@ -377,14 +317,14 @@ const NouvelleDemande: React.FC = () => {
               </div>
             </Card>
 
-            <ConditionsGenerales 
+            <ConditionsGenerales
               accepted={formData.accepteCGU}
               onAcceptedChange={(accepted) => setFormData(prev => ({ ...prev, accepteCGU: accepted }))}
             />
 
             <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-sm text-amber-800">
-                <strong>Information importante:</strong> Une fois votre demande envoyée, vous recevrez un email de confirmation. 
+                <strong>Information importante:</strong> Une fois votre demande envoyée, vous recevrez un email de confirmation.
                 Le traitement de votre dossier peut prendre jusqu'à 15 jours ouvrables.
               </p>
             </div>
@@ -402,36 +342,28 @@ const NouvelleDemande: React.FC = () => {
         {/* Progression */}
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                const isActive = currentStep === step.id;
-                const isCompleted = currentStep > step.id;
-                
-                return (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`flex flex-col items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}>
-                      <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center mb-2 ${
-                        isCompleted ? 'bg-green-500 border-green-500 text-white' :
-                        isActive ? 'bg-blue-500 border-blue-500 text-white' :
-                        'bg-gray-100 border-gray-300 text-gray-400'
-                      }`}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <span className={`text-xs text-center font-medium ${
-                        isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-400'
-                      }`}>
-                        {step.title}
-                      </span>
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`flex-1 h-0.5 mx-4 mb-6 ${
-                        currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
-                      }`} />
-                    )}
-                  </div>
-                );
-              })}
+            <div className="flex w-full justify-between items-center gap-0">
+              {/* À gauche */}
+              <div className="flex flex-col items-center w-1/3">
+                <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 mx-auto ${currentStep > 1 ? 'bg-green-500 border-green-500 text-white' : currentStep === 1 ? 'bg-blue-500 border-blue-500 text-white' : 'bg-gray-100 border-gray-300 text-gray-400'}`}>
+                  <User className="h-6 w-6" />
+                </div>
+                <span className={`text-xs text-center font-medium ${currentStep === 1 ? 'text-blue-600' : currentStep > 1 ? 'text-green-600' : 'text-gray-400'}`}>Informations personnelles</span>
+              </div>
+              {/* Milieu */}
+              <div className="flex flex-col items-center w-1/3">
+                <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 mx-auto ${currentStep > 2 ? 'bg-green-500 border-green-500 text-white' : currentStep === 2 ? 'bg-blue-500 border-blue-500 text-white' : 'bg-gray-100 border-gray-300 text-gray-400'}`}>
+                  <FileText className="h-6 w-6" />
+                </div>
+                <span className={`text-xs text-center font-medium ${currentStep === 2 ? 'text-blue-600' : currentStep > 2 ? 'text-green-600' : 'text-gray-400'}`}>Justificatifs</span>
+              </div>
+              {/* À droite */}
+              <div className="flex flex-col items-center w-1/3">
+                <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center mb-2 mx-auto ${currentStep === 3 ? 'bg-blue-500 border-blue-500 text-white' : 'bg-gray-100 border-gray-300 text-gray-400'}`}>
+                  <CheckCircle className="h-6 w-6" />
+                </div>
+                <span className={`text-xs text-center font-medium ${currentStep === 3 ? 'text-blue-600' : 'text-gray-400'}`}>Validation</span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -448,20 +380,20 @@ const NouvelleDemande: React.FC = () => {
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handlePrevious}
             disabled={currentStep === 1}
           >
             Précédent
           </Button>
-          
+
           {currentStep < steps.length ? (
             <Button onClick={handleNext}>
               Suivant
             </Button>
           ) : (
-            <Button 
+            <Button
               onClick={handleSubmit}
               disabled={!formData.accepteCGU || isLoading}
             >

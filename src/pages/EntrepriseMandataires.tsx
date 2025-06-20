@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useApiData } from '@/hooks/useApiData';
 import PageLayout from '@/components/PageLayout';
@@ -17,7 +16,7 @@ const EntrepriseMandataires: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <LoadingSpinner size="lg" text="Chargement des mandataires..." />
       </div>
     );
@@ -34,7 +33,7 @@ const EntrepriseMandataires: React.FC = () => {
   }
 
   const entrepriseMandataires = mockData.drivers.filter(d => d.entrepriseId === currentUser.id);
-  
+
   const filteredMandataires = entrepriseMandataires.filter(mandataire =>
     mandataire.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     mandataire.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -58,7 +57,7 @@ const EntrepriseMandataires: React.FC = () => {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Mandataires actifs</CardTitle>
@@ -71,7 +70,7 @@ const EntrepriseMandataires: React.FC = () => {
               </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Documents vérifiés</CardTitle>

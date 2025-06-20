@@ -9,10 +9,10 @@ import AlertesCritiques from '@/components/AlertesCritiques';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  Car, 
-  Clock, 
+import {
+  Users,
+  Car,
+  Clock,
   AlertTriangle,
   Download,
   Upload,
@@ -30,7 +30,7 @@ const DashboardEntreprise: React.FC = () => {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <LoadingSpinner size="lg" text="Chargement du tableau de bord..." />
       </div>
     );
@@ -45,7 +45,7 @@ const DashboardEntreprise: React.FC = () => {
   const chartData = getChartData('evolutionDemandes');
 
   const handleResoudreAlerte = (alerteId: string) => {
-    setAlertes(prev => prev.map(a => 
+    setAlertes(prev => prev.map(a =>
       a.id === alerteId ? { ...a, resolu: true } : a
     ));
   };
@@ -101,15 +101,15 @@ const DashboardEntreprise: React.FC = () => {
             iconColor="text-blue-600"
             onClick={() => navigate('/entreprise/sessions')}
           />
-          
+
           <DashboardCard
-            title="Chauffeurs en ligne"
+            title="Conducteurs en ligne"
             value={`${stats.chauffeursEnLigne}/15`}
             icon={Users}
             iconColor="text-green-600"
             onClick={() => navigate('/chauffeurs')}
           />
-          
+
           <DashboardCard
             title="Véhicules actifs"
             value={`${stats.vehiculesActifs}/12`}
@@ -117,7 +117,7 @@ const DashboardEntreprise: React.FC = () => {
             iconColor="text-purple-600"
             onClick={() => navigate('/vehicules')}
           />
-          
+
           <DashboardCard
             title="Vitesse moyenne"
             value={`${stats.vitesseMoyenne} km/h`}
@@ -181,7 +181,7 @@ const DashboardEntreprise: React.FC = () => {
             ]}
           />
 
-          <AlertesCritiques 
+          <AlertesCritiques
             alertes={alertes}
             onResoudre={handleResoudreAlerte}
           />
@@ -194,35 +194,35 @@ const DashboardEntreprise: React.FC = () => {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-4 gap-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/chauffeurs/nouveau')}
               >
                 <Plus className="h-6 w-6" />
-                <span>Ajouter chauffeur</span>
+                <span>Ajouter Conducteur</span>
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/vehicules/nouveau')}
               >
                 <Car className="h-6 w-6" />
                 <span>Nouveau véhicule</span>
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/entreprise/demandes')}
               >
                 <FileText className="h-6 w-6" />
                 <span>Nouvelle demande</span>
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 className="h-20 flex flex-col gap-2"
                 onClick={() => navigate('/entreprise/sessions')}
               >
