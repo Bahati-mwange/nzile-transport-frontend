@@ -99,7 +99,7 @@ const EntrepriseChronoData: React.FC = () => {
   );
 
   return (
-    <PageLayout title="Données Chronotachygraphe - Entreprise" actions={actionButtons}>
+    <PageLayout title="Données Chronotachygraphe" actions={actionButtons} fullWidth>
       <div className="space-y-6">
         {/* Filtres */}
         <Card>

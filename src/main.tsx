@@ -5,6 +5,8 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 
 createRoot(document.getElementById("root")!).render(
     <SidebarProvider>
-        <App />
+        <div id="app-wrapper">
+            <App />
+        </div>
     </SidebarProvider>
 );

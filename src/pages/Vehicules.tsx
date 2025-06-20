@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -24,7 +23,7 @@ const Vehicules: React.FC = () => {
     setVehicles(data);
   };
 
-  const filteredVehicles = vehicles.filter(vehicle => 
+  const filteredVehicles = vehicles.filter(vehicle =>
     vehicle.marque.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehicle.modele.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehicle.immatriculation.toLowerCase().includes(searchTerm.toLowerCase())
@@ -95,23 +94,23 @@ const Vehicules: React.FC = () => {
                   <p><strong>Chronotachygraphe:</strong> {vehicle.chronotachygraphe ? 'Oui' : 'Non'}</p>
                 </div>
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="text-xs px-2 py-1 h-7">
                     <Link to={`/vehicules/${vehicle.id}`}>
                       <Eye className="h-3 w-3 mr-1" />
                       Voir
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="text-xs px-2 py-1 h-7">
                     <Link to={`/vehicules/${vehicle.id}/edit`}>
                       <Edit className="h-3 w-3 mr-1" />
                       Modifier
                     </Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleDelete(vehicle.id)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-xs px-2 py-1 h-7 text-red-600 hover:text-red-700"
                   >
                     <Trash2 className="h-3 w-3 mr-1" />
                     Supprimer

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
@@ -24,7 +23,7 @@ const Chauffeurs: React.FC = () => {
     setDrivers(data);
   };
 
-  const filteredDrivers = drivers.filter(driver => 
+  const filteredDrivers = drivers.filter(driver =>
     driver.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     driver.prenom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     driver.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -91,23 +90,23 @@ const Chauffeurs: React.FC = () => {
                   <p><strong>Ville:</strong> {driver.ville}</p>
                 </div>
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="text-xs px-2 py-1 h-7">
                     <Link to={`/chauffeurs/${driver.id}`}>
                       <Eye className="h-3 w-3 mr-1" />
                       Voir
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="text-xs px-2 py-1 h-7">
                     <Link to={`/chauffeurs/${driver.id}/edit`}>
                       <Edit className="h-3 w-3 mr-1" />
                       Modifier
                     </Link>
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => handleDelete(driver.id)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-xs px-2 py-1 h-7 text-red-600 hover:text-red-700"
                   >
                     <Trash2 className="h-3 w-3 mr-1" />
                     Supprimer
