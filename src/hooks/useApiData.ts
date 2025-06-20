@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 // Types pour notre système de transport
@@ -302,6 +303,7 @@ export const useApiData = () => {
     localStorage.removeItem('currentUser');
   };
 
+  // Fixed: Return the array directly, not wrapped in apiCall
   const getDrivers = (): Driver[] => mockDrivers;
   const getCompanies = () => apiCall(mockCompanies);
   const getVehicles = () => apiCall(mockVehicles);

@@ -201,15 +201,15 @@ export const mockDashboardStats: DashboardStats = {
     totalConducteurs: 25,
     totalVehicules: 18,
     totalCartes: 23,
-    sessionsAujourdhui: 12,
+    sessionsAujourdhui: 15,
     alertesActives: 3,
     alertesCritiques: 3,
     chauffeursEnLigne: 15,
     vehiculesActifs: 12,
     vitesseMoyenne: 68,
-    tempsConduiteTotal: 45,
+    tempsConduiteTotal: 124, // Updated based on new mock data
     tempsReposTotal: 12,
-    infractionsDuJour: 2
+    infractionsDuJour: 8 // Updated based on new mock data
   }
 };
 
@@ -507,11 +507,11 @@ export const mockChronoData = [
   }
 ];
 
-// Nouvelles données de sessions avec les propriétés attendues
+// Nouvelles données de sessions avec plus d'entrées pour les entreprises
 export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
   {
     id: '1',
-    date: '2024-01-15',
+    date: '2024-01-20',
     driverId: '1',
     vehicleId: '1',
     typeConduite: 'partage',
@@ -523,7 +523,7 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
   },
   {
     id: '2',
-    date: '2024-01-16',
+    date: '2024-01-20',
     driverId: '2',
     vehicleId: '3',
     typeConduite: 'solo',
@@ -535,7 +535,7 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
   },
   {
     id: '3',
-    date: '2024-01-17',
+    date: '2024-01-20',
     driverId: '3',
     vehicleId: '2',
     typeConduite: 'solo',
@@ -547,7 +547,7 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
   },
   {
     id: '4',
-    date: '2024-01-18',
+    date: '2024-01-19',
     driverId: '1',
     vehicleId: '1',
     typeConduite: 'partage',
@@ -571,7 +571,7 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
   },
   {
     id: '6',
-    date: '2024-01-20',
+    date: '2024-01-19',
     driverId: '3',
     vehicleId: '2',
     typeConduite: 'solo',
@@ -579,6 +579,114 @@ export const mockChronoSessionDataWithDetails: ChronoSessionData[] = [
     distance: 480,
     vitesseMoyenne: 69,
     infractions: 1,
+    statut: 'valide'
+  },
+  {
+    id: '7',
+    date: '2024-01-18',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'partage',
+    tempsConduite: 8.5,
+    distance: 520,
+    vitesseMoyenne: 71,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '8',
+    date: '2024-01-18',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'solo',
+    tempsConduite: 5,
+    distance: 240,
+    vitesseMoyenne: 48,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '9',
+    date: '2024-01-18',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'solo',
+    tempsConduite: 9.5,
+    distance: 720,
+    vitesseMoyenne: 76,
+    infractions: 3,
+    statut: 'anomalie'
+  },
+  {
+    id: '10',
+    date: '2024-01-17',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'solo',
+    tempsConduite: 7,
+    distance: 380,
+    vitesseMoyenne: 54,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '11',
+    date: '2024-01-17',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'solo',
+    tempsConduite: 6.5,
+    distance: 300,
+    vitesseMoyenne: 46,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '12',
+    date: '2024-01-17',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'partage',
+    tempsConduite: 8,
+    distance: 560,
+    vitesseMoyenne: 70,
+    infractions: 1,
+    statut: 'valide'
+  },
+  {
+    id: '13',
+    date: '2024-01-16',
+    driverId: '1',
+    vehicleId: '1',
+    typeConduite: 'solo',
+    tempsConduite: 9,
+    distance: 680,
+    vitesseMoyenne: 76,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '14',
+    date: '2024-01-16',
+    driverId: '2',
+    vehicleId: '3',
+    typeConduite: 'solo',
+    tempsConduite: 4.5,
+    distance: 220,
+    vitesseMoyenne: 49,
+    infractions: 0,
+    statut: 'valide'
+  },
+  {
+    id: '15',
+    date: '2024-01-16',
+    driverId: '3',
+    vehicleId: '2',
+    typeConduite: 'solo',
+    tempsConduite: 8.5,
+    distance: 620,
+    vitesseMoyenne: 73,
+    infractions: 0,
     statut: 'valide'
   }
 ];
