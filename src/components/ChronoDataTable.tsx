@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,16 +12,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Download, Upload, Filter, Clock, Moon, AlertTriangle, TrendingUp } from 'lucide-react';
-import { mockChronoData, ChronoData } from '@/data/mockData';
+import { mockChronoSessionData, ChronoData } from '@/data/mockData';
 
 const ChronoDataTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [data] = useState<ChronoData[]>(mockChronoData);
+  const [data] = useState<ChronoData[]>(mockChronoSessionData);
 
   const filteredData = data.filter(item => 
-    item.locationStart.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.driverId.includes(searchTerm) ||
-    item.vehicleId.includes(searchTerm)
+    (item.locationStart?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (item.driverId?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (item.vehicleId?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   const formatDuration = (minutes: number) => {

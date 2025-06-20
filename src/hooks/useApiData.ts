@@ -255,8 +255,10 @@ import {
   mockAlertes,
   mockVehiculeDetails,
   mockChronoData,
+  mockChronoSessionData,
   Session,
-  DashboardStats
+  DashboardStats,
+  ChronoData
 } from '../data/mockData';
 
 export const useApiData = () => {
@@ -352,8 +354,20 @@ export const useApiData = () => {
     return mockChronoData;
   };
 
+  const getChronoSessionData = () => {
+    return mockChronoSessionData;
+  };
+
   const getChronoDataByVehicle = (vehicleId: string) => {
     return mockChronoData.find(c => c.vehiculeId === vehicleId);
+  };
+
+  const getChronoSessionsByVehicle = (vehicleId: string): ChronoData[] => {
+    return mockChronoSessionData.filter(c => c.vehicleId === vehicleId);
+  };
+
+  const getChronoSessionsByDriver = (driverId: string): ChronoData[] => {
+    return mockChronoSessionData.filter(c => c.driverId === driverId);
   };
 
   // Chargement initial des données utilisateur
@@ -403,7 +417,10 @@ export const useApiData = () => {
     getSessionsByVehicle,
     getInfractionsByDriver,
     getChronoData,
+    getChronoSessionData,
     getChronoDataByVehicle,
+    getChronoSessionsByVehicle,
+    getChronoSessionsByDriver,
     mockData: {
       drivers: mockDrivers,
       companies: mockCompanies,
@@ -414,7 +431,8 @@ export const useApiData = () => {
       chartData: mockChartData,
       alertes: mockAlertes,
       vehiculeDetails: mockVehiculeDetails,
-      chronoData: mockChronoData
+      chronoData: mockChronoData,
+      chronoSessionData: mockChronoSessionData
     }
   };
 };

@@ -1,4 +1,3 @@
-
 import type { Vehicle } from '@/hooks/useApiData';
 
 export interface Session {
@@ -39,6 +38,20 @@ export interface DashboardStats {
     sessionsAujourdhui: number;
     alertesActives: number;
   };
+}
+
+// Interface pour les données de sessions chronotachygraphe
+export interface ChronoData {
+  id: string;
+  timestamp: string;
+  driverId: string;
+  vehicleId: string;
+  actionType: 'conduite' | 'pause' | 'arret';
+  duration: number; // en minutes
+  speed?: number; // km/h
+  locationStart: string;
+  locationEnd?: string;
+  violationType?: string;
 }
 
 export const mockSessions: Session[] = [
@@ -246,6 +259,124 @@ export const mockVehiculeDetails = {
     chronotachygraphe: null
   }
 };
+
+// Données de sessions chronotachygraphe détaillées
+export const mockChronoSessionData: ChronoData[] = [
+  {
+    id: '1',
+    timestamp: '2024-01-15T06:00:00Z',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'conduite',
+    duration: 120,
+    speed: 68,
+    locationStart: 'Libreville',
+    locationEnd: 'Ntoum',
+    violationType: null
+  },
+  {
+    id: '2',
+    timestamp: '2024-01-15T08:00:00Z',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'pause',
+    duration: 15,
+    locationStart: 'Ntoum',
+    violationType: null
+  },
+  {
+    id: '3',
+    timestamp: '2024-01-15T08:15:00Z',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'conduite',
+    duration: 180,
+    speed: 72,
+    locationStart: 'Ntoum',
+    locationEnd: 'Lambaréné',
+    violationType: null
+  },
+  {
+    id: '4',
+    timestamp: '2024-01-15T11:15:00Z',
+    driverId: '1',
+    vehicleId: '1',
+    actionType: 'conduite',
+    duration: 200,
+    speed: 75,
+    locationStart: 'Lambaréné',
+    locationEnd: 'Port-Gentil',
+    violationType: 'Excès de vitesse'
+  },
+  {
+    id: '5',
+    timestamp: '2024-01-16T08:00:00Z',
+    driverId: '2',
+    vehicleId: '3',
+    actionType: 'conduite',
+    duration: 90,
+    speed: 45,
+    locationStart: 'Libreville Centre',
+    locationEnd: 'PK12',
+    violationType: null
+  },
+  {
+    id: '6',
+    timestamp: '2024-01-16T09:30:00Z',
+    driverId: '2',
+    vehicleId: '3',
+    actionType: 'pause',
+    duration: 10,
+    locationStart: 'PK12',
+    violationType: null
+  },
+  {
+    id: '7',
+    timestamp: '2024-01-16T09:40:00Z',
+    driverId: '2',
+    vehicleId: '3',
+    actionType: 'conduite',
+    duration: 150,
+    speed: 50,
+    locationStart: 'PK12',
+    locationEnd: 'Akanda',
+    violationType: null
+  },
+  {
+    id: '8',
+    timestamp: '2024-01-17T05:30:00Z',
+    driverId: '3',
+    vehicleId: '2',
+    actionType: 'conduite',
+    duration: 300,
+    speed: 78,
+    locationStart: 'Port-Gentil',
+    locationEnd: 'Mouila',
+    violationType: 'Conduite continue excessive'
+  },
+  {
+    id: '9',
+    timestamp: '2024-01-17T10:30:00Z',
+    driverId: '3',
+    vehicleId: '2',
+    actionType: 'pause',
+    duration: 30,
+    locationStart: 'Mouila',
+    violationType: 'Temps de repos insuffisant'
+  },
+  {
+    id: '10',
+    timestamp: '2024-01-17T11:00:00Z',
+    driverId: '3',
+    vehicleId: '2',
+    actionType: 'conduite',
+    duration: 240,
+    speed: 85,
+    locationStart: 'Mouila',
+    locationEnd: 'Franceville',
+    violationType: null
+  }
+];
 
 // Nouvelles données pour les chronotachygraphes
 export const mockChronoData = [
