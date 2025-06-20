@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApiData } from '@/hooks/useApiData';
+import { Alerte } from '@/data/mockData';
 import PageLayout from '@/components/PageLayout';
 import DashboardCard from '@/components/DashboardCard';
 import SessionChart from '@/components/SessionChart';
@@ -26,7 +26,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 const DashboardEntreprise: React.FC = () => {
   const navigate = useNavigate();
   const { currentUser, isInitialized, getDashboardStats, getChartData, getAlertes } = useApiData();
-  const [alertes, setAlertes] = useState(getAlertes());
+  const [alertes, setAlertes] = useState<Alerte[]>(getAlertes());
 
   if (!isInitialized) {
     return (
