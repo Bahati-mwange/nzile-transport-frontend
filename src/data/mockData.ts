@@ -2,7 +2,6 @@ import type { Vehicle } from '@/hooks/useApiData';
 
 export interface Session {
   statut: string;
-  statut: string;
   id: string;
   driverId: string;
   driverName: string;
