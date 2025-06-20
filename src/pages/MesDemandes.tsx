@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Search, Filter, Eye, Edit, Download } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Download, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -48,15 +48,74 @@ const MesDemandes: React.FC = () => {
   const getStatusBadge = (statut: string) => {
     switch (statut) {
       case 'validee':
-        return <Badge className="bg-green-100 text-green-800">Validée</Badge>;
+        return (
+          <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Validée
+          </Badge>
+        );
       case 'en_attente':
-        return <Badge variant="secondary">En cours</Badge>;
+        return (
+          <Badge variant="secondary" className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            En cours
+          </Badge>
+        );
       case 'rejetee':
-        return <Badge variant="destructive">Rejetée</Badge>;
+        return (
+          <Badge variant="destructive" className="flex items-center gap-1">
+            <XCircle className="h-3 w-3" />
+            Rejetée
+          </Badge>
+        );
       case 'expiree':
-        return <Badge variant="outline">Expirée</Badge>;
+        return (
+          <Badge variant="outline" className="flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            Expirée
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{statut}</Badge>;
+    }
+  };
+
+  const getTraitementDetails = (carte: any) => {
+    const dateEmission = new Date(carte.dateEmission);
+    const dateExpiration = new Date(carte.dateExpiration);
+    const now = new Date();
+    
+    switch (carte.statut) {
+      case 'validee':
+        return {
+          message: `Carte émise le ${dateEmission.toLocaleDateString('fr-FR')}`,
+          detail: `Valide jusqu'au ${dateExpiration.toLocaleDateString('fr-FR')}`,
+          color: 'text-green-600'
+        };
+      case 'en_attente':
+        return {
+          message: 'Demande en cours de traitement',
+          detail: 'Délai de traitement: 5-10 jours ouvrables',
+          color: 'text-orange-600'
+        };
+      case 'rejetee':
+        return {
+          message: 'Demande rejetée',
+          detail: 'Documents non conformes ou incomplets',
+          color: 'text-red-600'
+        };
+      case 'expiree':
+        return {
+          message: 'Carte expirée',
+          detail: 'Renouvellement nécessaire',
+          color: 'text-gray-600'
+        };
+      default:
+        return {
+          message: 'Statut inconnu',
+          detail: '',
+          color: 'text-gray-600'
+        };
     }
   };
 
@@ -123,7 +182,7 @@ const MesDemandes: React.FC = () => {
         {/* Liste des demandes */}
         <Card>
           <CardHeader>
-            <CardTitle>Liste des demandes ({filteredCards.length})</CardTitle>
+            <CardTitle>Historique des demandes ({filteredCards.length})</CardTitle>
           </CardHeader>
           <CardContent>
             {filteredCards.length > 0 ? (
@@ -136,87 +195,103 @@ const MesDemandes: React.FC = () => {
                         <TableHead>Numéro</TableHead>
                         <TableHead>Type</TableHead>
                         <TableHead>Statut</TableHead>
-                        <TableHead>Date émission</TableHead>
-                        <TableHead>Date expiration</TableHead>
+                        <TableHead>Détails de traitement</TableHead>
+                        <TableHead>Date demande</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredCards.map((carte) => (
-                        <TableRow key={carte.id}>
-                          <TableCell className="font-medium">{carte.numero}</TableCell>
-                          <TableCell className="capitalize">{carte.type}</TableCell>
-                          <TableCell>{getStatusBadge(carte.statut)}</TableCell>
-                          <TableCell>{new Date(carte.dateEmission).toLocaleDateString('fr-FR')}</TableCell>
-                          <TableCell>{new Date(carte.dateExpiration).toLocaleDateString('fr-FR')}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <Button variant="outline" size="sm" asChild>
-                                <Link to={`/mes-demandes/${carte.id}`}>
-                                  <Eye className="h-3 w-3" />
-                                </Link>
-                              </Button>
-                              {carte.statut === 'en_attente' && (
+                      {filteredCards.map((carte) => {
+                        const traitementInfo = getTraitementDetails(carte);
+                        return (
+                          <TableRow key={carte.id}>
+                            <TableCell className="font-medium">{carte.numero}</TableCell>
+                            <TableCell className="capitalize">{carte.type}</TableCell>
+                            <TableCell>{getStatusBadge(carte.statut)}</TableCell>
+                            <TableCell>
+                              <div className={`text-sm ${traitementInfo.color}`}>
+                                <p className="font-medium">{traitementInfo.message}</p>
+                                <p className="text-xs text-gray-500">{traitementInfo.detail}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>{new Date(carte.dateEmission).toLocaleDateString('fr-FR')}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
                                 <Button variant="outline" size="sm" asChild>
-                                  <Link to={`/mes-demandes/${carte.id}/edit`}>
-                                    <Edit className="h-3 w-3" />
+                                  <Link to={`/mes-demandes/${carte.id}`}>
+                                    <Eye className="h-3 w-3" />
                                   </Link>
                                 </Button>
-                              )}
-                              {carte.statut === 'validee' && (
-                                <Button variant="outline" size="sm">
-                                  <Download className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                {carte.statut === 'en_attente' && (
+                                  <Button variant="outline" size="sm" asChild>
+                                    <Link to={`/mes-demandes/${carte.id}/edit`}>
+                                      <Edit className="h-3 w-3" />
+                                    </Link>
+                                  </Button>
+                                )}
+                                {carte.statut === 'validee' && (
+                                  <Button variant="outline" size="sm">
+                                    <Download className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
 
                 {/* Vue cartes pour mobile */}
                 <div className="md:hidden space-y-4">
-                  {filteredCards.map((carte) => (
-                    <Card key={carte.id}>
-                      <CardContent className="pt-4">
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-semibold">{carte.numero}</h3>
-                            {getStatusBadge(carte.statut)}
-                          </div>
-                          <div className="space-y-1 text-sm text-muted-foreground">
-                            <p>Type: {carte.type}</p>
-                            <p>Émission: {new Date(carte.dateEmission).toLocaleDateString('fr-FR')}</p>
-                            <p>Expiration: {new Date(carte.dateExpiration).toLocaleDateString('fr-FR')}</p>
-                          </div>
-                          <div className="flex gap-2 pt-2">
-                            <Button variant="outline" size="sm" className="flex-1" asChild>
-                              <Link to={`/mes-demandes/${carte.id}`}>
-                                <Eye className="h-3 w-3 mr-1" />
-                                Voir
-                              </Link>
-                            </Button>
-                            {carte.statut === 'en_attente' && (
+                  {filteredCards.map((carte) => {
+                    const traitementInfo = getTraitementDetails(carte);
+                    return (
+                      <Card key={carte.id}>
+                        <CardContent className="pt-4">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h3 className="font-semibold">{carte.numero}</h3>
+                              {getStatusBadge(carte.statut)}
+                            </div>
+                            <div className="space-y-1 text-sm">
+                              <p>Type: {carte.type}</p>
+                              <div className={traitementInfo.color}>
+                                <p className="font-medium">{traitementInfo.message}</p>
+                                <p className="text-xs">{traitementInfo.detail}</p>
+                              </div>
+                              <p className="text-muted-foreground">
+                                Demandée le: {new Date(carte.dateEmission).toLocaleDateString('fr-FR')}
+                              </p>
+                            </div>
+                            <div className="flex gap-2 pt-2">
                               <Button variant="outline" size="sm" className="flex-1" asChild>
-                                <Link to={`/mes-demandes/${carte.id}/edit`}>
-                                  <Edit className="h-3 w-3 mr-1" />
-                                  Modifier
+                                <Link to={`/mes-demandes/${carte.id}`}>
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Voir
                                 </Link>
                               </Button>
-                            )}
-                            {carte.statut === 'validee' && (
-                              <Button variant="outline" size="sm" className="flex-1">
-                                <Download className="h-3 w-3 mr-1" />
-                                Télécharger
-                              </Button>
-                            )}
+                              {carte.statut === 'en_attente' && (
+                                <Button variant="outline" size="sm" className="flex-1" asChild>
+                                  <Link to={`/mes-demandes/${carte.id}/edit`}>
+                                    <Edit className="h-3 w-3 mr-1" />
+                                    Modifier
+                                  </Link>
+                                </Button>
+                              )}
+                              {carte.statut === 'validee' && (
+                                <Button variant="outline" size="sm" className="flex-1">
+                                  <Download className="h-3 w-3 mr-1" />
+                                  Télécharger
+                                </Button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </>
             ) : (

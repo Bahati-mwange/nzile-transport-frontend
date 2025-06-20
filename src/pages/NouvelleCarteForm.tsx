@@ -16,7 +16,8 @@ import {
   Upload, 
   FileText, 
   Camera,
-  ArrowLeft
+  ArrowLeft,
+  User
 } from 'lucide-react';
 
 const NouvelleCarteForm: React.FC = () => {
@@ -24,7 +25,7 @@ const NouvelleCarteForm: React.FC = () => {
   const [drivers, setDrivers] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     driverId: '',
-    type: 'conducteur',
+    type: 'conducteur', // Fixé par défaut pour les particuliers
     documents: [] as string[],
     photoPath: '',
     permisPath: '',
@@ -107,6 +108,8 @@ const NouvelleCarteForm: React.FC = () => {
     );
   }
 
+  const isParticulier = currentUser?.type === 'particulier';
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
@@ -133,14 +136,14 @@ const NouvelleCarteForm: React.FC = () => {
         <Card className="animate-fade-in">
           <CardHeader>
             <CardTitle className="flex items-center">
-              <CreditCard className="h-5 w-5 mr-2" />
-              Informations de la demande
+              <User className="h-5 w-5 mr-2" />
+              {isParticulier ? "Informations personnelles" : "Informations de la demande"}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Sélection du conducteur (pour les entreprises) */}
-              {currentUser?.type === 'entreprise' && (
+              {/* Sélection du conducteur (pour les entreprises uniquement) */}
+              {!isParticulier && (
                 <div className="space-y-2">
                   <Label htmlFor="driverId">Conducteur *</Label>
                   <Select value={formData.driverId} onValueChange={(value) => 
@@ -160,21 +163,46 @@ const NouvelleCarteForm: React.FC = () => {
                 </div>
               )}
 
-              {/* Type de carte */}
-              <div className="space-y-2">
-                <Label htmlFor="type">Type de carte *</Label>
-                <Select value={formData.type} onValueChange={(value) => 
-                  setFormData(prev => ({ ...prev, type: value }))
-                }>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="conducteur">Carte conducteur</SelectItem>
-                    <SelectItem value="entreprise">Carte entreprise</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Affichage des informations du particulier */}
+              {isParticulier && currentUser?.profile && (
+                <div className="bg-blue-50 p-4 rounded-lg space-y-2">
+                  <h4 className="font-semibold text-blue-900">Vos informations</h4>
+                  <div className="text-sm text-blue-800 grid md:grid-cols-2 gap-2">
+                    <p><strong>Nom:</strong> {(currentUser.profile as any).nom}</p>
+                    <p><strong>Prénom:</strong> {(currentUser.profile as any).prenom}</p>
+                    <p><strong>CNI:</strong> {(currentUser.profile as any).cni}</p>
+                    <p><strong>Permis:</strong> {(currentUser.profile as any).permis}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Type de carte (fixé pour les particuliers) */}
+              {!isParticulier && (
+                <div className="space-y-2">
+                  <Label htmlFor="type">Type de carte *</Label>
+                  <Select value={formData.type} onValueChange={(value) => 
+                    setFormData(prev => ({ ...prev, type: value }))
+                  }>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="conducteur">Carte conducteur</SelectItem>
+                      <SelectItem value="entreprise">Carte entreprise</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {isParticulier && (
+                <div className="space-y-2">
+                  <Label>Type de carte</Label>
+                  <div className="p-3 bg-gray-50 rounded-md">
+                    <p className="text-sm font-medium">Carte conducteur</p>
+                    <p className="text-xs text-gray-600">Type de carte par défaut pour les particuliers</p>
+                  </div>
+                </div>
+              )}
 
               {/* Documents requis */}
               <div className="space-y-4">
