@@ -14,7 +14,8 @@ import {
   MapPin,
   AlertTriangle,
   Download,
-  BarChart3
+  BarChart3,
+  Users
 } from 'lucide-react';
 
 const SessionDetail: React.FC = () => {
@@ -156,17 +157,31 @@ const SessionDetail: React.FC = () => {
 
           {/* Sidebar */}
           <div className="space-y-4">
-            {/* Conducteur */}
+            {/* Conducteurs */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Conducteur
+                  {session.conducteurs?.secondaire ? (
+                    <Users className="h-5 w-5 mr-2" />
+                  ) : (
+                    <User className="h-5 w-5 mr-2" />
+                  )}
+                  Conducteur{session.conducteurs?.secondaire ? 's' : ''}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="font-medium">Jean-Baptiste ONDO</p>
-                <p className="text-sm text-gray-600">Carte: GAB-2023-001234</p>
+              <CardContent className="space-y-3">
+                <div>
+                  <p className="font-medium">{session.conducteurs?.principal || session.driverName}</p>
+                  <p className="text-sm text-gray-600">Conducteur principal</p>
+                  <p className="text-sm text-gray-600">Carte: GAB-2023-001234</p>
+                </div>
+                {session.conducteurs?.secondaire && (
+                  <div className="pt-2 border-t">
+                    <p className="font-medium">{session.conducteurs.secondaire}</p>
+                    <p className="text-sm text-gray-600">Conducteur secondaire</p>
+                    <p className="text-sm text-gray-600">Carte: GAB-2023-005678</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -179,7 +194,7 @@ const SessionDetail: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="font-medium">Mercedes-Benz Actros</p>
+                <p className="font-medium">{session.vehicleName}</p>
                 <p className="text-sm text-gray-600">GA-3456-LV</p>
               </CardContent>
             </Card>
@@ -205,6 +220,12 @@ const SessionDetail: React.FC = () => {
                   <span className="text-gray-600">Score conduite</span>
                   <Badge variant="default">Bon</Badge>
                 </div>
+                {session.conducteurs?.secondaire && (
+                  <div className="flex justify-between pt-2 border-t">
+                    <span className="text-gray-600">Conduite partagée</span>
+                    <Badge variant="secondary">2 conducteurs</Badge>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

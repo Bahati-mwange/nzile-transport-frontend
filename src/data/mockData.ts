@@ -1,272 +1,300 @@
-// Données mockées pour la plateforme transport.nzile.ga
+
+import type { Vehicle } from '@/hooks/useApiData';
 
 export interface Session {
   id: string;
   driverId: string;
+  driverName: string;
   vehicleId: string;
+  vehicleName: string;
   carteId: string;
   dateDebut: string;
   dateFin: string;
-  dureeConduite: number; // minutes
-  dureeRepos: number; // minutes
-  dureeAutre: number; // minutes
-  distanceParcourue: number; // km
+  dureeConduite: number;
+  dureeRepos: number;
+  distanceParcourue: number;
   vitesseMoyenne: number;
   vitesseMax: number;
   infractions: string[];
   trajetDepart: string;
   trajetArrivee: string;
-  activites: SessionActivity[];
-  statut: 'en_cours' | 'terminee' | 'suspendue';
-  coDriverId?: string; // Conducteur accompagnant
-}
-
-export interface SessionActivity {
-  id: string;
-  heure: string;
-  type: 'conduite' | 'repos' | 'autre' | 'pause';
-  duree: number; // minutes
-  vitesse?: number;
-  localisation: string;
-}
-
-export interface ChronoData {
-  timestamp: string;
-  driverId: string;
-  vehicleId: string;
-  actionType: 'conduite' | 'pause' | 'arret';
-  duration: number; // minutes
-  speed?: number;
-  locationStart: string;
-  locationEnd?: string;
-  violationType?: string;
+  conducteurs?: {
+    principal: string;
+    secondaire?: string;
+  };
 }
 
 export interface DashboardStats {
   particulier: {
-    tempsConduiteTotal: number; // heures ce mois
-    tempsRepos: number; // heures ce mois
-    infractions: number;
-    sessionsCount: number;
-    derniereSSession?: Session;
-    carteStatut: 'active' | 'expire_bientot' | 'expiree';
-    carteExpiration: string;
+    totalCartes: number;
+    cartesValidees: number;
+    cartesEnAttente: number;
+    cartesExpirees: number;
+    prochainExpiration: string;
   };
   entreprise: {
+    totalConducteurs: number;
+    totalVehicules: number;
+    totalCartes: number;
     sessionsAujourdhui: number;
-    chauffeursEnLigne: number;
-    vehiculesActifs: number;
-    tempsConduiteTotal: number; // heures aujourd'hui
-    tempsReposTotal: number; // heures aujourd'hui
-    infractionsDuJour: number;
-    vitesseMoyenne: number;
-    alertesCritiques: number;
+    alertesActives: number;
   };
 }
 
-// Sessions mockées détaillées
 export const mockSessions: Session[] = [
   {
     id: '1',
     driverId: '1',
+    driverName: 'Jean-Baptiste ONDO',
     vehicleId: '1',
+    vehicleName: 'Mercedes-Benz Actros',
     carteId: '1',
-    dateDebut: '2025-01-19T06:00:00',
-    dateFin: '2025-01-19T18:30:00',
-    dureeConduite: 450, // 7h30
-    dureeRepos: 120, // 2h
-    dureeAutre: 180, // 3h
-    distanceParcourue: 485,
-    vitesseMoyenne: 65,
-    vitesseMax: 90,
-    infractions: [],
-    trajetDepart: 'Libreville',
-    trajetArrivee: 'Franceville',
-    statut: 'terminee',
-    coDriverId: '3',
-    activites: [
-      { id: '1-1', heure: '06:00', type: 'conduite', duree: 120, vitesse: 70, localisation: 'Libreville' },
-      { id: '1-2', heure: '08:00', type: 'repos', duree: 45, localisation: 'Ndjolé' },
-      { id: '1-3', heure: '08:45', type: 'conduite', duree: 180, vitesse: 65, localisation: 'Ndjolé' },
-      { id: '1-4', heure: '11:45', type: 'repos', duree: 60, localisation: 'Booué' },
-      { id: '1-5', heure: '12:45', type: 'conduite', duree: 150, vitesse: 60, localisation: 'Booué' },
-    ]
-  },
-  {
-    id: '2',
-    driverId: '2',
-    vehicleId: '3',
-    carteId: '2',
-    dateDebut: '2025-01-19T07:15:00',
-    dateFin: '2025-01-19T16:45:00',
-    dureeConduite: 330, // 5h30
-    dureeRepos: 120, // 2h
-    dureeAutre: 120, // 2h
-    distanceParcourue: 245,
-    vitesseMoyenne: 45,
+    dateDebut: '2024-01-15T06:00:00Z',
+    dateFin: '2024-01-15T14:30:00Z',
+    dureeConduite: 480,
+    dureeRepos: 30,
+    distanceParcourue: 420,
+    vitesseMoyenne: 68,
     vitesseMax: 85,
     infractions: ['Excès de vitesse mineur'],
     trajetDepart: 'Libreville',
-    trajetArrivee: 'Lambaréné',
-    statut: 'terminee',
-    activites: [
-      { id: '2-1', heure: '07:15', type: 'conduite', duree: 90, vitesse: 50, localisation: 'Libreville' },
-      { id: '2-2', heure: '08:45', type: 'repos', duree: 30, localisation: 'Kango' },
-      { id: '2-3', heure: '09:15', type: 'conduite', duree: 120, vitesse: 45, localisation: 'Kango' },
-      { id: '2-4', heure: '11:15', type: 'repos', duree: 45, localisation: 'Lambaréné' },
-      { id: '2-5', heure: '12:00', type: 'conduite', duree: 120, vitesse: 40, localisation: 'Lambaréné' },
-    ]
-  },
-  {
-    id: '3',
-    driverId: '1',
-    vehicleId: '1',
-    carteId: '1',
-    dateDebut: '2025-01-20T08:00:00',
-    dateFin: '2025-01-20T17:00:00',
-    dureeConduite: 300, // 5h
-    dureeRepos: 180, // 3h
-    dureeAutre: 60, // 1h
-    distanceParcourue: 320,
-    vitesseMoyenne: 64,
-    vitesseMax: 95,
-    infractions: ['Excès de vitesse grave'],
-    trajetDepart: 'Franceville',
-    trajetArrivee: 'Moanda',
-    statut: 'terminee',
-    activites: [
-      { id: '3-1', heure: '08:00', type: 'conduite', duree: 150, vitesse: 70, localisation: 'Franceville' },
-      { id: '3-2', heure: '10:30', type: 'repos', duree: 90, localisation: 'Bakoumba' },
-      { id: '3-3', heure: '12:00', type: 'conduite', duree: 150, vitesse: 58, localisation: 'Bakoumba' },
-    ]
-  }
-];
-
-// Données chronotachygraphe détaillées
-export const mockChronoData: ChronoData[] = [
-  {
-    timestamp: '2025-01-19T06:00:00',
-    driverId: '1',
-    vehicleId: '1',
-    actionType: 'conduite',
-    duration: 120,
-    speed: 70,
-    locationStart: 'Libreville',
-    locationEnd: 'Ndjolé'
-  },
-  {
-    timestamp: '2025-01-19T08:00:00',
-    driverId: '1',
-    vehicleId: '1',
-    actionType: 'pause',
-    duration: 45,
-    locationStart: 'Ndjolé'
-  },
-  {
-    timestamp: '2025-01-19T10:45:00',
-    driverId: '2',
-    vehicleId: '3',
-    actionType: 'conduite',
-    duration: 90,
-    speed: 85,
-    locationStart: 'Kango',
-    locationEnd: 'Lambaréné',
-    violationType: 'Pause manquée'
-  }
-];
-
-// Stats dashboard mockées
-export const mockDashboardStats: DashboardStats = {
-  particulier: {
-    tempsConduiteTotal: 45.5, // heures ce mois
-    tempsRepos: 15.2,
-    infractions: 2,
-    sessionsCount: 8,
-    derniereSSession: mockSessions[0],
-    carteStatut: 'active',
-    carteExpiration: '2028-01-15'
-  },
-  entreprise: {
-    sessionsAujourdhui: 12,
-    chauffeursEnLigne: 8,
-    vehiculesActifs: 6,
-    tempsConduiteTotal: 86.5,
-    tempsReposTotal: 28.3,
-    infractionsDuJour: 3,
-    vitesseMoyenne: 62,
-    alertesCritiques: 2
-  }
-};
-
-// Données pour graphiques
-export const mockChartData = {
-  tempsConduite: [
-    { jour: 'Lun', conduite: 8.5, repos: 2.5 },
-    { jour: 'Mar', conduite: 7.2, repos: 3.1 },
-    { jour: 'Mer', conduite: 9.1, repos: 2.8 },
-    { jour: 'Jeu', conduite: 6.8, repos: 3.5 },
-    { jour: 'Ven', conduite: 8.9, repos: 2.2 },
-    { jour: 'Sam', conduite: 5.5, repos: 4.0 },
-    { jour: 'Dim', conduite: 0, repos: 0 }
-  ],
-  vitesseSession: [
-    { temps: '06:00', vitesse: 0 },
-    { temps: '06:30', vitesse: 65 },
-    { temps: '07:00', vitesse: 72 },
-    { temps: '07:30', vitesse: 68 },
-    { temps: '08:00', vitesse: 0 },
-    { temps: '08:30', vitesse: 0 },
-    { temps: '09:00', vitesse: 58 },
-    { temps: '09:30', vitesse: 62 },
-    { temps: '10:00', vitesse: 71 },
-    { temps: '10:30', vitesse: 69 },
-    { temps: '11:00', vitesse: 0 },
-  ],
-  evolutionDemandes: [
-    { mois: 'Jan', validees: 45, enCours: 12, rejetees: 3 },
-    { mois: 'Fév', validees: 52, enCours: 8, rejetees: 2 },
-    { mois: 'Mar', validees: 38, enCours: 15, rejetees: 5 },
-    { mois: 'Avr', validees: 61, enCours: 9, rejetees: 1 },
-    { mois: 'Mai', validees: 55, enCours: 11, rejetees: 4 },
-    { mois: 'Juin', validees: 48, enCours: 14, rejetees: 2 }
-  ]
-};
-
-// Alertes critiques pour entreprises
-export const mockAlertes = [
-  {
-    id: '1',
-    type: 'temps_depassement',
-    message: 'Chauffeur ONDO: temps de conduite dépassé (9h30)',
-    gravite: 'critique' as const,
-    timestamp: '2025-01-19T15:30:00',
-    driverId: '1',
-    resolu: false
+    trajetArrivee: 'Port-Gentil',
+    conducteurs: {
+      principal: 'Jean-Baptiste ONDO',
+      secondaire: 'Paul-Henri NZIGOU'
+    }
   },
   {
     id: '2',
-    type: 'vitesse_excessive',
-    message: 'Véhicule GA-3456-LV: excès de vitesse détecté (95 km/h)',
-    gravite: 'moyenne' as const,
-    timestamp: '2025-01-19T14:15:00',
+    driverId: '2',
+    driverName: 'Marie-Claire MBADINGA',
+    vehicleId: '3',
+    vehicleName: 'Toyota Hiace',
+    carteId: '2',
+    dateDebut: '2024-01-16T08:00:00Z',
+    dateFin: '2024-01-16T12:00:00Z',
+    dureeConduite: 240,
+    dureeRepos: 0,
+    distanceParcourue: 180,
+    vitesseMoyenne: 45,
+    vitesseMax: 60,
+    infractions: [],
+    trajetDepart: 'Libreville Centre',
+    trajetArrivee: 'Akanda',
+    conducteurs: {
+      principal: 'Marie-Claire MBADINGA'
+    }
+  },
+  {
+    id: '3',
+    driverId: '3',
+    driverName: 'Paul-Henri NZIGOU',
+    vehicleId: '2',
+    vehicleName: 'Volvo FH16',
+    carteId: '3',
+    dateDebut: '2024-01-17T05:30:00Z',
+    dateFin: '2024-01-17T16:00:00Z',
+    dureeConduite: 540,
+    dureeRepos: 90,
+    distanceParcourue: 650,
+    vitesseMoyenne: 72,
+    vitesseMax: 90,
+    infractions: ['Conduite continue excessive', 'Temps de repos insuffisant'],
+    trajetDepart: 'Port-Gentil',
+    trajetArrivee: 'Franceville',
+    conducteurs: {
+      principal: 'Paul-Henri NZIGOU'
+    }
+  },
+  {
+    id: '4',
+    driverId: '1',
+    driverName: 'Jean-Baptiste ONDO',
     vehicleId: '1',
-    resolu: false
+    vehicleName: 'Mercedes-Benz Actros',
+    carteId: '1',
+    dateDebut: '2024-01-18T07:00:00Z',
+    dateFin: '2024-01-18T19:30:00Z',
+    dureeConduite: 600,
+    dureeRepos: 150,
+    distanceParcourue: 780,
+    vitesseMoyenne: 75,
+    vitesseMax: 88,
+    infractions: [],
+    trajetDepart: 'Libreville',
+    trajetArrivee: 'Lambaréné',
+    conducteurs: {
+      principal: 'Jean-Baptiste ONDO',
+      secondaire: 'Marie-Claire MBADINGA'
+    }
+  }
+];
+
+export const mockDashboardStats: DashboardStats = {
+  particulier: {
+    totalCartes: 1,
+    cartesValidees: 1,
+    cartesEnAttente: 0,
+    cartesExpirees: 0,
+    prochainExpiration: '2028-03-10'
+  },
+  entreprise: {
+    totalConducteurs: 25,
+    totalVehicules: 18,
+    totalCartes: 23,
+    sessionsAujourdhui: 12,
+    alertesActives: 3
+  }
+};
+
+export const mockChartData = {
+  tempsConduite: [
+    { mois: 'Jan', temps: 120 },
+    { mois: 'Fév', temps: 135 },
+    { mois: 'Mar', temps: 98 },
+    { mois: 'Avr', temps: 167 },
+    { mois: 'Mai', temps: 145 },
+    { mois: 'Jun', temps: 189 }
+  ],
+  vitesseSession: [
+    { session: 'S1', vitesseMoy: 68, vitesseMax: 85 },
+    { session: 'S2', vitesseMoy: 45, vitesseMax: 60 },
+    { session: 'S3', vitesseMoy: 72, vitesseMax: 90 },
+    { session: 'S4', vitesseMoy: 75, vitesseMax: 88 }
+  ],
+  evolutionDemandes: [
+    { mois: 'Jan', demandes: 12, validees: 10 },
+    { mois: 'Fév', demandes: 15, validees: 13 },
+    { mois: 'Mar', demandes: 8, validees: 7 },
+    { mois: 'Avr', demandes: 18, validees: 16 },
+    { mois: 'Mai', demandes: 14, validees: 12 },
+    { mois: 'Jun', demandes: 20, validees: 18 }
+  ]
+};
+
+export const mockAlertes = [
+  {
+    id: '1',
+    type: 'critique',
+    titre: 'Temps de conduite dépassé',
+    description: 'Conducteur Jean-Baptiste ONDO a dépassé 9h de conduite continue',
+    timestamp: '2024-01-15T14:30:00Z',
+    vehicule: 'GA-3456-LV',
+    conducteur: 'Jean-Baptiste ONDO'
+  },
+  {
+    id: '2',
+    type: 'warning',
+    titre: 'Carte expirant bientôt',
+    description: 'La carte GAB-2023-005678 expire dans 15 jours',
+    timestamp: '2024-01-14T09:00:00Z',
+    conducteur: 'Marie-Claire MBADINGA'
+  },
+  {
+    id: '3',
+    type: 'info',
+    titre: 'Maintenance programmée',
+    description: 'Véhicule GA-7890-PG programmé pour maintenance demain',
+    timestamp: '2024-01-13T16:45:00Z',
+    vehicule: 'GA-7890-PG'
   }
 ];
 
 export const mockVehiculeDetails = {
   '1': {
-    prochainControle: '2025-03-15',
-    derniereMaintenance: '2024-12-10',
-    kilometrage: 89450,
-    consommationMoyenne: 28.5, // L/100km
-    coutEntretien: 145000 // FCFA
+    maintenance: {
+      derniere: '2024-01-01',
+      prochaine: '2024-07-01',
+      kilometres: 145000
+    },
+    carburant: {
+      consommation: 28.5,
+      economie: '+12%'
+    },
+    chronotachygraphe: {
+      numeroSerie: 'CHR-2020-001234',
+      derniereTelecharge: '2024-01-15',
+      statut: 'Actif'
+    }
   },
   '2': {
-    prochainControle: '2025-05-22',
-    derniereMaintenance: '2025-01-05',
-    kilometrage: 76230,
-    consommationMoyenne: 32.1,
-    coutEntretien: 98000
+    maintenance: {
+      derniere: '2023-12-15',
+      prochaine: '2024-06-15',
+      kilometres: 89000
+    },
+    carburant: {
+      consommation: 32.1,
+      economie: '+8%'
+    },
+    chronotachygraphe: {
+      numeroSerie: 'CHR-2021-005678',
+      derniereTelecharge: '2024-01-17',
+      statut: 'Actif'
+    }
+  },
+  '3': {
+    maintenance: {
+      derniere: '2024-01-10',
+      prochaine: '2024-04-10',
+      kilometres: 45000
+    },
+    carburant: {
+      consommation: 12.8,
+      economie: '+5%'
+    },
+    chronotachygraphe: null
   }
 };
+
+// Nouvelles données pour les chronotachygraphes
+export const mockChronoData = [
+  {
+    id: '1',
+    vehiculeId: '1',
+    vehicule: 'Mercedes-Benz Actros - GA-3456-LV',
+    numeroSerie: 'CHR-2020-001234',
+    dateInstallation: '2020-03-15',
+    statut: 'Actif',
+    derniereTelecharge: '2024-01-15T08:00:00Z',
+    prochaineTelecharge: '2024-01-22T08:00:00Z',
+    donneesDisponibles: true,
+    version: '1.4.2',
+    certificat: 'CERT-GAB-2020-001',
+    dateEtalonnage: '2023-03-15',
+    prochainEtalonnage: '2025-03-15'
+  },
+  {
+    id: '2',
+    vehiculeId: '2',
+    vehicule: 'Volvo FH16 - GA-7890-PG',
+    numeroSerie: 'CHR-2021-005678',
+    dateInstallation: '2021-06-20',
+    statut: 'Actif',
+    derniereTelecharge: '2024-01-17T09:30:00Z',
+    prochaineTelecharge: '2024-01-24T09:30:00Z',
+    donneesDisponibles: true,
+    version: '1.5.1',
+    certificat: 'CERT-GAB-2021-005',
+    dateEtalonnage: '2023-06-20',
+    prochainEtalonnage: '2025-06-20'
+  },
+  {
+    id: '3',
+    vehiculeId: '3',
+    vehicule: 'Toyota Hiace - GA-1234-LV',
+    numeroSerie: null,
+    dateInstallation: null,
+    statut: 'Non installé',
+    derniereTelecharge: null,
+    prochaineTelecharge: null,
+    donneesDisponibles: false,
+    version: null,
+    certificat: null,
+    dateEtalonnage: null,
+    prochainEtalonnage: null,
+    demandeEnCours: true,
+    dateDemande: '2024-01-10',
+    statutDemande: 'En attente d\'approbation'
+  }
+];

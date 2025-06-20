@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
+import { Upload } from 'lucide-react';
 
 const vehiculeSchema = z.object({
   marque: z.string().min(2, 'La marque est requise'),
@@ -20,6 +21,7 @@ const vehiculeSchema = z.object({
   typeVehicule: z.string().min(1, 'Le type de véhicule est requis'),
   annee: z.number().min(1990, 'Année invalide').max(new Date().getFullYear() + 1, 'Année invalide'),
   chronotachygraphe: z.boolean(),
+  numeroSerie: z.string().optional(),
 });
 
 type VehiculeFormData = z.infer<typeof vehiculeSchema>;
@@ -27,6 +29,9 @@ type VehiculeFormData = z.infer<typeof vehiculeSchema>;
 const NouveauVehicule: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [hasChronotachygraphe, setHasChronotachygraphe] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<VehiculeFormData>({
     resolver: zodResolver(vehiculeSchema),
     defaultValues: {
@@ -36,6 +41,25 @@ const NouveauVehicule: React.FC = () => {
 
   const onSubmit = async (data: VehiculeFormData) => {
     try {
+      // Validation spécifique pour le chronotachygraphe
+      if (data.chronotachygraphe && !data.numeroSerie) {
+        toast({
+          title: "Erreur",
+          description: "Le numéro de série du chronotachygraphe est requis",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!data.chronotachygraphe && uploadedFiles.length === 0) {
+        toast({
+          title: "Erreur",
+          description: "Veuillez télécharger les documents nécessaires pour la demande de chronotachygraphe",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Simulation d'ajout
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -52,6 +76,15 @@ const NouveauVehicule: React.FC = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setUploadedFiles(prev => [...prev, ...files]);
+  };
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -136,14 +169,89 @@ const NouveauVehicule: React.FC = () => {
               )}
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="chronotachygraphe"
-                onCheckedChange={(checked) => setValue('chronotachygraphe', !!checked)}
-              />
-              <Label htmlFor="chronotachygraphe">
-                Équipé d'un chronotachygraphe
-              </Label>
+            {/* Section Chronotachygraphe */}
+            <div className="space-y-4 p-4 border rounded-lg bg-gray-50">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="chronotachygraphe"
+                    onCheckedChange={(checked) => {
+                      const hasDevice = !!checked;
+                      setHasChronotachygraphe(hasDevice);
+                      setValue('chronotachygraphe', hasDevice);
+                      if (!hasDevice) {
+                        setValue('numeroSerie', '');
+                      }
+                    }}
+                  />
+                  <Label htmlFor="chronotachygraphe">
+                    Équipé d'un chronotachygraphe
+                  </Label>
+                </div>
+
+                {hasChronotachygraphe && (
+                  <div className="flex-1 max-w-sm">
+                    <Input
+                      {...register('numeroSerie')}
+                      placeholder="Numéro de série"
+                      className="font-mono"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Documents pour demande de chronotachygraphe */}
+              {!hasChronotachygraphe && (
+                <div className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-700">
+                    Documents requis pour la demande de chronotachygraphe
+                  </Label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                    <div className="text-center">
+                      <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="mt-4">
+                        <label htmlFor="file-upload" className="cursor-pointer">
+                          <span className="mt-2 block text-sm font-medium text-gray-900">
+                            Télécharger les documents
+                          </span>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Certificat d'immatriculation, assurance, contrôle technique
+                          </p>
+                        </label>
+                        <input
+                          id="file-upload"
+                          name="file-upload"
+                          type="file"
+                          multiple
+                          accept=".pdf,.jpg,.jpeg,.png"
+                          className="sr-only"
+                          onChange={handleFileUpload}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Liste des fichiers téléchargés */}
+                  {uploadedFiles.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Fichiers téléchargés :</Label>
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-white border rounded">
+                          <span className="text-sm">{file.name}</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                          >
+                            Supprimer
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className="flex gap-4 pt-4">

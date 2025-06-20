@@ -29,8 +29,8 @@ const CarteDetail: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!currentUser || !id) {
-      navigate('/login');
+    if (!id) {
+      navigate('/cartes');
       return;
     }
 
